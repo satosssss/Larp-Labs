@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useFlow } from "@/lib/flow";
 import { usePreferences } from "@/lib/preferences";
-import { Icon, Disclaimer } from "./ui";
+import { Icon } from "./ui";
 import { UploadStep } from "./steps/upload";
 import { ReviewStep } from "./steps/review";
 import { ExplanationStep } from "./steps/explanation";
@@ -137,7 +137,6 @@ export function NoticeFlow() {
       ) : (
         <PreparationStep en={en} />
       )}
-      <Disclaimer en={en} />
       <dialog ref={dialog} className="modal" aria-labelledby="restart-title">
         <h2 id="restart-title">{en ? "Start again?" : "Magsimula muli?"}</h2>
         <p>

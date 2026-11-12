@@ -82,11 +82,7 @@ export function Disclaimer({ en = false }: { en?: boolean }) {
     <details className="legal-disclosure">
       <summary>
         <Icon name="help" size={17} />
-        <span>
-          {en
-            ? "Not legal advice — what does that mean?"
-            : "Hindi ito legal advice — ano ang ibig sabihin?"}
-        </span>
+        <span>{en ? "Not legal advice" : "Hindi ito legal advice"}</span>
         <Icon name="chevron" size={16} />
       </summary>
       <div className="legal-disclosure-body">

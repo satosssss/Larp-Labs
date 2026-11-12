@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePreferences } from "@/lib/preferences";
-import { Icon, Disclaimer } from "./ui";
+import { Icon } from "./ui";
 export function Landing() {
   const en = usePreferences((s) => s.language) === "en";
   return (
@@ -43,7 +43,6 @@ export function Landing() {
           <span>·</span>
           {en ? "Filipino & English" : "Filipino at English"}
         </p>
-        <Disclaimer en={en} />
         <HeroPreview en={en} />
         <div className="hero-bottom">
           <span>

@@ -269,11 +269,12 @@ test("legal limits expand accessibly and review panels align", async ({
   await expect(
     page.getByText("Kasama mo sa pag-unawa", { exact: true }),
   ).toHaveCount(0);
-  const disclosure = page.locator(".legal-disclosure");
+  const disclosure = page.locator("header .legal-disclosure");
   await disclosure.locator("summary").focus();
   await page.keyboard.press("Enter");
   await expect(disclosure).toHaveAttribute("open", "");
   await expect(disclosure).toContainText("Hindi kami abogado");
+  await noOverflow(page);
   await page.keyboard.press("Enter");
   await expect(disclosure).not.toHaveAttribute("open", "");
   await sample(page);

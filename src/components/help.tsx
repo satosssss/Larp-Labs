@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePreferences } from "@/lib/preferences";
 import { DirectoryFinder } from "./directory-finder";
-import { Icon, Disclaimer } from "./ui";
+import { Icon } from "./ui";
 export function HelpPage() {
   const en = usePreferences((s) => s.language) === "en";
   return (
@@ -91,7 +91,6 @@ export function HelpPage() {
           ? "These are reference links, not partner endorsements or a guarantee of assistance."
           : "Mga reference link ang mga ito, hindi endorsement ng partner o garantiya ng tulong."}
       </p>
-      <Disclaimer en={en} />
     </main>
   );
 }
@@ -170,7 +169,6 @@ export function VerifyPage() {
           <Icon name="arrowUp" />
         </Link>
       </div>
-      <Disclaimer en={en} />
     </main>
   );
 }

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { usePreferences } from "@/lib/preferences";
-import { Icon } from "./ui";
+import { Icon, Disclaimer } from "./ui";
 export function Brand() {
   return (
     <Link className="brand" href="/" aria-label="LegaLinaw home">
@@ -53,6 +53,7 @@ export function Header() {
           <Link href="/help">{en ? "Find legal help" : "Legal na tulong"}</Link>
         </nav>
         <div className="header-actions">
+          <Disclaimer en={en} />
           <button
             className="language-button"
             onClick={() => setLanguage(en ? "fil" : "en")}

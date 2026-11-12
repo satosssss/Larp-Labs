@@ -152,3 +152,6 @@ The builder may choose component decomposition, icon package, CSS organization, 
 ## User-requested refinement — 2026-11-13
 
 Jay requested conversational Filipino, less repeated text in the five-step process, equally sized review panels, a clickable explanation of the legal-advice limitation, removal of the landing eyebrow, and stronger button/form color distinction. The update adds an expandable explanation on the landing page and existing disclaimer surfaces, uses warm amber (#F4BD63) with navy text for primary actions, and introduces mint form surfaces. The original document text remains untouched. The added accent extends the original four-color palette at Jay's request.
+
+
+User refinement: restore brand-green primary actions instead of amber. Move the legal-advice explanation to a compact clickable header control, removing repeated page-level disclosures. Keep mint form surfaces and the simplified flow.

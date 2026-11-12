@@ -3,8 +3,8 @@
   --teal: #147d73;
   --mint: #e5f3ef;
   --canvas: #f8faf9;
-  --action: #f4bd63;
-  --action-hover: #e9ac46;
+  --action: var(--teal);
+  --action-hover: #10675e;
   --muted: #566970;
   --line: #dce5e2;
   --font-sans: var(--font-geist-sans);
@@ -166,7 +166,7 @@ p {
 .button {
   border: 1px solid var(--action);
   background: var(--action);
-  color: var(--ink);
+  color: white;
   padding: 0.85rem 1.25rem;
   border-radius: 7px;
   display: inline-flex;
@@ -2103,5 +2103,73 @@ dialog.modal::backdrop {
   }
   .legal-disclosure summary {
     font-size: 0.78rem;
+  }
+}
+
+/* Compact legal information control, shared across pages. */
+.header {
+  position: relative;
+  height: auto;
+  min-height: 94px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  gap: 16px;
+}
+.header .legal-disclosure {
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+.header .legal-disclosure summary {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 0.75rem;
+  color: var(--teal);
+  cursor: pointer;
+}
+.header .legal-disclosure summary:hover {
+  background: var(--mint);
+}
+.header .legal-disclosure-body {
+  position: absolute;
+  z-index: 30;
+  right: 20px;
+  top: calc(100% - 8px);
+  width: min(420px, calc(100% - 40px));
+  max-height: 65vh;
+  overflow: auto;
+  padding: 20px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px #18324b20;
+}
+@media (max-width: 1100px) {
+  .header .desktop-nav {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .header {
+    padding: 12px 20px;
+    gap: 8px;
+  }
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex: 1;
+  }
+  .header .legal-disclosure {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .header .legal-disclosure summary {
+    justify-content: center;
+  }
+  .header .legal-disclosure summary > span {
+    flex: initial;
   }
 }
