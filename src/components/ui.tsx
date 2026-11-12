@@ -79,13 +79,44 @@ export function Icon({
 }
 export function Disclaimer({ en = false }: { en?: boolean }) {
   return (
-    <p className="disclaimer">
-      <Icon name="shield" size={16} />
-      <span>
-        {en
-          ? "Legal information, not legal advice. Speak with a qualified legal professional."
-          : "Impormasyong legal, hindi legal advice. Kumonsulta sa isang kwalipikadong abogado."}
-      </span>
-    </p>
+    <details className="legal-disclosure">
+      <summary>
+        <Icon name="help" size={17} />
+        <span>
+          {en
+            ? "Not legal advice — what does that mean?"
+            : "Hindi ito legal advice — ano ang ibig sabihin?"}
+        </span>
+        <Icon name="chevron" size={16} />
+      </summary>
+      <div className="legal-disclosure-body">
+        <p>
+          <strong>{en ? "We are not lawyers." : "Hindi kami abogado."}</strong>{" "}
+          {en
+            ? "LegaLinaw explains what your notice says and helps you prepare questions for a lawyer."
+            : "Tinutulungan ka ng LegaLinaw na maintindihan ang notice mo at maghanda ng mga tanong para sa abogado."}
+        </p>
+        <ul>
+          <li>
+            {en
+              ? "AI can make mistakes. Always check the original document."
+              : "Puwedeng magkamali ang AI. I-check pa rin ang original na dokumento."}
+          </li>
+          <li>
+            {en
+              ? "We cannot tell you what legal decision to make or predict the outcome of a case."
+              : "Hindi namin masasabi kung anong legal na desisyon ang dapat mong gawin o kung ano ang magiging resulta ng kaso."}
+          </li>
+          <li>
+            {en
+              ? "For advice about your situation, speak with a lawyer."
+              : "Para sa payong akma sa sitwasyon mo, makipag-usap sa abogado."}
+          </li>
+        </ul>
+        <a href="/help">
+          {en ? "Find legal help" : "Saan puwedeng humingi ng tulong?"} ↗
+        </a>
+      </div>
+    </details>
   );
 }

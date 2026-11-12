@@ -38,8 +38,8 @@ export function SourcePanel({
       >
         <p className="field-hint">
           {en
-            ? "A matching passage supports checking the explanation; it does not prove the interpretation is correct."
-            : "Makakatulong ang bahaging ito sa pagsuri; hindi nito pinatutunayang tama ang interpretasyon."}
+            ? "Highlighted below: the passage used for this explanation. The interpretation may still be wrong."
+            : "Naka-highlight ang pinagbasehan ng paliwanag. Posible pa ring mali ang interpretasyon."}
         </p>
         <pre className="document-text" style={{ marginTop: 20 }}>
           {index < 0 ? (

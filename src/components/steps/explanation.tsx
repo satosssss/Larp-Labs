@@ -137,7 +137,7 @@ export function ExplanationStep({ en }: { en: boolean }) {
             {en ? "Retry" : "Subukan muli"}
           </button>
           <button className="button button-quiet" onClick={() => go(1)}>
-            {en ? "Review text" : "Suriin ang teksto"}
+            {en ? "Review text" : "I-check ulit ang text"}
           </button>
           <Link href="/help">{en ? "Find help" : "Humanap ng tulong"} ↗</Link>
         </div>
@@ -196,9 +196,7 @@ export function ExplanationStep({ en }: { en: boolean }) {
         <section className="panel">
           <div className="panel-header">
             <span>
-              {en
-                ? "Your notice, in simple words"
-                : "Ang notice mo, sa simpleng salita"}
+              {en ? "Your notice, in simple words" : "Paliwanag sa notice mo"}
             </span>
             <Icon name="sparkles" size={18} />
           </div>
@@ -207,17 +205,13 @@ export function ExplanationStep({ en }: { en: boolean }) {
               <span className="status-dot" />
               {analysis.type}
             </span>
-            <p className="field-hint">
-              {en
-                ? `Possible document type${mode === "sample" ? " · sample classification" : ""}`
-                : `Posibleng uri ng dokumento${mode === "sample" ? " · sample classification" : ""}`}
-            </p>
+
             <p className="summary-text">{analysis.summary}</p>
             <div className="analysis-meta">
               <div className="meta-card">
                 <span>
                   <Icon name="clock" size={16} />
-                  {en ? "Stated schedule" : "Nakasulat na iskedyul"}
+                  {en ? "Stated schedule" : "Petsa at oras sa notice"}
                 </span>
                 <strong>{analysis.date}</strong>
                 <small>{analysis.time}</small>
@@ -225,13 +219,11 @@ export function ExplanationStep({ en }: { en: boolean }) {
               <div className="meta-card">
                 <span>
                   <Icon name="pin" size={16} />
-                  {en ? "Named sender" : "Nakasulat na nagpadala"}
+                  {en ? "Named sender" : "Nagpadala"}
                 </span>
                 <strong>{analysis.sender}</strong>
                 <small>
-                  {en
-                    ? "Not independently verified"
-                    : "Hindi pa hiwalay na nabeberipika"}
+                  {en ? "Not independently verified" : "Hindi pa verified"}
                 </small>
               </div>
             </div>
@@ -241,9 +233,7 @@ export function ExplanationStep({ en }: { en: boolean }) {
               onClick={openSource}
             >
               <Icon name="link" size={16} />
-              {en
-                ? "See the supporting passage"
-                : "Tingnan ang pinagmulang bahagi"}
+              {en ? "Where does it say this?" : "Saan ito nakasulat?"}
               <Icon name="arrowUp" size={16} />
             </button>
             <div className="details-list">
@@ -257,7 +247,7 @@ export function ExplanationStep({ en }: { en: boolean }) {
                   <p>
                     {en
                       ? "In everyday language, paanyaya means invitation. The legal significance depends on the actual document and circumstances; a legal professional can help clarify it."
-                      : "Sa karaniwang salita, ang paanyaya ay imbitasyon. Nakadepende sa tunay na dokumento at sitwasyon ang legal na kahulugan nito; makakatulong ang abogado sa paglinaw."}
+                      : "Ang “paanyaya” ay imbitasyon. Itanong sa abogado kung ano ang ibig sabihin nito para sa sitwasyon mo."}
                   </p>
                 </details>
               )}
@@ -270,12 +260,12 @@ export function ExplanationStep({ en }: { en: boolean }) {
                 <p>
                   {en
                     ? "This example cannot verify a sender. Use a contact source you independently trust to confirm the document."
-                    : "Hindi kayang beripikahin ng halimbawang ito ang nagpadala. Gumamit ng hiwalay at mapagkakatiwalaang contact source upang makumpirma ang dokumento."}
+                    : "Hindi namin makukumpirma kung tunay ang nagpadala. Hanapin ang official contact ng opisina para magtanong."}
                 </p>
                 <Link className="text-button" href="/verify">
                   {en
                     ? "Open the verification guide"
-                    : "Buksan ang gabay sa pagsuri"}{" "}
+                    : "Paano i-check ang nagpadala?"}{" "}
                   ↗
                 </Link>
               </details>
@@ -322,8 +312,8 @@ export function ExplanationStep({ en }: { en: boolean }) {
       </div>
       <div className="notice-alert">
         {en
-          ? "Before making a legal decision, bring the notice to a qualified legal professional."
-          : "Bago gumawa ng legal na desisyon, dalhin ang notice sa isang kwalipikadong abogado."}{" "}
+          ? "Need advice for your situation?"
+          : "Kailangan mo ng payo para sa sitwasyon mo?"}{" "}
         <Link href="/help">
           {en ? "Find legal help" : "Humanap ng legal na tulong"} ↗
         </Link>
@@ -331,10 +321,10 @@ export function ExplanationStep({ en }: { en: boolean }) {
       <div className="screen-actions">
         <button className="button button-quiet" onClick={() => go(1)}>
           <Icon name="back" />
-          {en ? "Review text" : "Suriin ang teksto"}
+          {en ? "Review text" : "I-check ulit ang text"}
         </button>
         <button className="button" onClick={() => go(3)}>
-          {en ? "Ask about the document" : "Magtanong tungkol sa dokumento"}
+          {en ? "Ask a question" : "May tanong pa ako"}
           <Icon name="arrow" />
         </button>
       </div>

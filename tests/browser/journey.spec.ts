@@ -6,20 +6,14 @@ async function sample(page: Page) {
 }
 async function explain(page: Page) {
   await sample(page);
-  await page
-    .getByRole("button", { name: "Tama ang text — ipaliwanag" })
-    .click();
+  await page.getByRole("button", { name: "Tama na — ipaliwanag" }).click();
 }
 async function prepare(page: Page) {
   await explain(page);
-  await page
-    .getByRole("button", { name: "Magtanong tungkol sa dokumento" })
-    .click();
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(0).click();
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(1).click();
-  await page
-    .getByRole("button", { name: "Maghanda para sa legal na tulong" })
-    .click();
+  await page.getByRole("button", { name: "May tanong pa ako" }).click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(0).click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(1).click();
+  await page.getByRole("button", { name: "Ituloy sa checklist" }).click();
 }
 async function noOverflow(page: Page) {
   expect(
@@ -52,7 +46,7 @@ test("sample journey, source, chat and preparation", async ({
   await explain(page);
   await page
     .getByRole("button", {
-      name: "Tingnan ang pinagmulang bahagi",
+      name: "Saan ito nakasulat?",
       exact: true,
     })
     .click();
@@ -62,12 +56,10 @@ test("sample journey, source, chat and preparation", async ({
     path: `test-results/explanation-${testInfo.project.name}.png`,
     fullPage: true,
   });
-  await page
-    .getByRole("button", { name: "Magtanong tungkol sa dokumento" })
-    .click();
-  await page.getByRole("button", { name: /Ano ang pakay ng liham/ }).click();
+  await page.getByRole("button", { name: "May tanong pa ako" }).click();
+  await page.getByRole("button", { name: /Tungkol saan ang notice/ }).click();
   await expect(page.getByRole("log")).toContainText(
-    "Inaanyayahan kang makipag-usap",
+    "Iniimbitahan kang makipag-usap",
   );
   await page
     .getByLabel("Ang tanong mo")
@@ -77,13 +69,11 @@ test("sample journey, source, chat and preparation", async ({
     "may nakahandang sagot lang",
   );
   await expect(
-    page.getByRole("button", { name: "Maghanda para sa legal na tulong" }),
+    page.getByRole("button", { name: "Ituloy sa checklist" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(0).click();
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(1).click();
-  await page
-    .getByRole("button", { name: "Maghanda para sa legal na tulong" })
-    .click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(0).click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(1).click();
+  await page.getByRole("button", { name: "Ituloy sa checklist" }).click();
   await expect(page.getByText("Checklist sa paghahanda")).toBeVisible();
   await noOverflow(page);
   await page.getByRole("button", { name: "PDF", exact: true }).click();
@@ -94,11 +84,11 @@ test("editing sample invalidates explanation and restores safely", async ({
 }) => {
   await explain(page);
   await page
-    .getByRole("button", { name: "Suriin ang teksto", exact: true })
+    .getByRole("button", { name: "I-check ulit ang text", exact: true })
     .click();
   await page.locator("#review-text").fill("Changed document");
   await expect(
-    page.getByRole("button", { name: "Tama ang text — ipaliwanag" }),
+    page.getByRole("button", { name: "Tama na — ipaliwanag" }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "3. Paliwanag" }),
@@ -107,7 +97,7 @@ test("editing sample invalidates explanation and restores safely", async ({
     .getByRole("button", { name: "Ibalik ang orihinal na halimbawa" })
     .click();
   await expect(
-    page.getByRole("button", { name: "Tama ang text — ipaliwanag" }),
+    page.getByRole("button", { name: "Tama na — ipaliwanag" }),
   ).toBeEnabled();
 });
 test("real files do not receive sample analysis", async ({ page }) => {
@@ -185,9 +175,7 @@ test("keyboard and accessibility across landing and all five steps", async ({
         .analyze()
     ).violations,
   ).toEqual([]);
-  await page
-    .getByRole("button", { name: "Tama ang text — ipaliwanag" })
-    .click();
+  await page.getByRole("button", { name: "Tama na — ipaliwanag" }).click();
   expect(
     (
       await new AxeBuilder({ page })
@@ -195,9 +183,7 @@ test("keyboard and accessibility across landing and all five steps", async ({
         .analyze()
     ).violations,
   ).toEqual([]);
-  await page
-    .getByRole("button", { name: "Magtanong tungkol sa dokumento" })
-    .click();
+  await page.getByRole("button", { name: "May tanong pa ako" }).click();
   expect(
     (
       await new AxeBuilder({ page })
@@ -205,11 +191,9 @@ test("keyboard and accessibility across landing and all five steps", async ({
         .analyze()
     ).violations,
   ).toEqual([]);
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(0).click();
-  await page.getByRole("button", { name: "Laktawan muna" }).nth(1).click();
-  await page
-    .getByRole("button", { name: "Maghanda para sa legal na tulong" })
-    .click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(0).click();
+  await page.getByRole("button", { name: "Skip muna" }).nth(1).click();
+  await page.getByRole("button", { name: "Ituloy sa checklist" }).click();
   expect(
     (
       await new AxeBuilder({ page })
@@ -250,21 +234,17 @@ test("200 percent text remains usable through the journey and restart dialog", a
     )
     .toBe("32px");
   await noOverflow(page);
-  await page
-    .getByRole("button", { name: "Tama ang text — ipaliwanag" })
-    .click();
+  await page.getByRole("button", { name: "Tama na — ipaliwanag" }).click();
   await noOverflow(page);
   await page
     .getByRole("button", {
-      name: "Tingnan ang pinagmulang bahagi",
+      name: "Saan ito nakasulat?",
       exact: true,
     })
     .click();
   await noOverflow(page);
   await page.getByRole("button", { name: "Isara ang pinagmulan" }).click();
-  await page
-    .getByRole("button", { name: "Magtanong tungkol sa dokumento" })
-    .click();
+  await page.getByRole("button", { name: "May tanong pa ako" }).click();
   await noOverflow(page);
   const restart = page.getByRole("button", {
     name: "Magsimula ng bagong dokumento",
@@ -280,4 +260,33 @@ test("200 percent text remains usable through the journey and restart dialog", a
   await noOverflow(page);
   await page.goto("/verify");
   await noOverflow(page);
+});
+
+test("legal limits expand accessibly and review panels align", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  await expect(
+    page.getByText("Kasama mo sa pag-unawa", { exact: true }),
+  ).toHaveCount(0);
+  const disclosure = page.locator(".legal-disclosure");
+  await disclosure.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(disclosure).toHaveAttribute("open", "");
+  await expect(disclosure).toContainText("Hindi kami abogado");
+  await page.keyboard.press("Enter");
+  await expect(disclosure).not.toHaveAttribute("open", "");
+  await sample(page);
+  if (testInfo.project.name === "desktop") {
+    const panels = page.locator(".review-grid > .panel");
+    const a = await panels.nth(0).boundingBox();
+    const b = await panels.nth(1).boundingBox();
+    expect(Math.abs(a!.width - b!.width)).toBeLessThan(2);
+    expect(Math.abs(a!.height - b!.height)).toBeLessThan(2);
+  }
+  await noOverflow(page);
+  await page.screenshot({
+    path: `test-results/review-refresh-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
 });

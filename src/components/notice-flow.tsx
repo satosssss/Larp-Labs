@@ -45,33 +45,18 @@ export function NoticeFlow() {
     : ["I-upload", "Suriin", "Paliwanag", "Mga tanong", "Paghahanda"];
   const titles = en
     ? [
-        "Let’s start with your notice.",
-        "A quick check, before we explain.",
-        "A little more clarity.",
-        "Let’s clear up your questions.",
-        "Feel more prepared for the conversation.",
+        "Upload your notice.",
+        "Does the text look right?",
+        "Here’s what it means.",
+        "What would you like to ask?",
+        "Get ready to speak with a lawyer.",
       ]
     : [
-        "Magsimula tayo sa notice mo.",
-        "Suriin muna, bago ipaliwanag.",
-        "Mas malinaw na ngayon.",
-        "Linawin natin ang mga tanong mo.",
-        "Mas handa sa pakikipag-usap.",
-      ];
-  const descriptions = en
-    ? [
-        "Choose a document or explore a fictional example.",
-        "Compare the text with the original. You can correct anything here.",
-        "Read what the document says, and see the passage behind the explanation.",
-        "Ask about the document and share a little context for your preparation.",
-        "Bring your documents, your notes, and the questions that matter to you.",
-      ]
-    : [
-        "Pumili ng dokumento o subukan ang isang kathang-isip na halimbawa.",
-        "Ihambing ang teksto sa orihinal. Maaari mong itama ang anumang hindi tugma.",
-        "Unawain ang nakasaad at tingnan ang pinagmulan ng paliwanag.",
-        "Magtanong tungkol sa dokumento at magbigay ng kaunting konteksto.",
-        "Ihanda ang dokumento, mga tala, at mga tanong na mahalaga sa iyo.",
+        "I-upload ang notice mo.",
+        "Tama ba ang nabasang text?",
+        "Ito ang ibig sabihin.",
+        "Ano ang tanong mo?",
+        "Ihanda ang mga kailangan mo.",
       ];
   function canEnter(i: number) {
     return (
@@ -101,8 +86,8 @@ export function NoticeFlow() {
           <span>
             <Icon name="book" size={17} />
             {en
-              ? "Sample mode · Fictional document and prepared answers."
-              : "Halimbawa lamang · Kathang-isip na dokumento at nakahandang sagot."}
+              ? "Demo · Fictional notice and prepared answers."
+              : "Demo lang · Hindi totoong notice. Sample ang mga sagot."}
           </span>
           <button
             className="text-button"
@@ -137,13 +122,9 @@ export function NoticeFlow() {
         {en ? "Step" : "Hakbang"} {step + 1} / 5 · {steps[step]}
       </p>
       <div className="screen-heading">
-        <p className="eyebrow">
-          0{step + 1} / {steps[step]}
-        </p>
         <h1 ref={heading} tabIndex={-1}>
           {titles[step]}
         </h1>
-        <p>{descriptions[step]}</p>
       </div>
       {step === 0 ? (
         <UploadStep en={en} />
@@ -162,14 +143,14 @@ export function NoticeFlow() {
         <p>
           {en
             ? "This clears the current document, questions, and edits from this tab. Nothing in this preview has been sent to a server."
-            : "Mawawala sa tab na ito ang kasalukuyang dokumento, mga tanong, at edit. Walang ipinadala sa server sa preview na ito."}
+            : "Mabubura sa tab na ito ang file at mga sagot mo. Walang na-upload sa preview na ito."}
         </p>
         <div className="screen-actions">
           <button
             className="button button-secondary"
             onClick={() => dialog.current?.close()}
           >
-            {en ? "Keep working" : "Magpatuloy dito"}
+            {en ? "Keep working" : "Dito muna"}
           </button>
           <button
             className="button"

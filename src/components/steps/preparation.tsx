@@ -15,7 +15,7 @@ export function PreparationStep({ en }: { en: boolean }) {
           "contact",
           en
             ? "Identify a legal help provider to ask about your notice."
-            : "Humanap ng legal help provider na mapagtatanungan tungkol sa notice.",
+            : "Humanap ng abogado o legal aid office.",
         ],
       ],
     },
@@ -32,13 +32,13 @@ export function PreparationStep({ en }: { en: boolean }) {
           "id",
           en
             ? "An identification document, if requested by the provider."
-            : "Isang pagkakakilanlan, kung hihingin ng provider.",
+            : "ID, kung hihingin ng opisina.",
         ],
         [
           "related",
           en
             ? "Any related documents and your notes."
-            : "Mga kaugnay na dokumento at tala.",
+            : "Iba pang dokumento at notes tungkol dito.",
         ],
       ],
     },
@@ -49,13 +49,13 @@ export function PreparationStep({ en }: { en: boolean }) {
           "schedule",
           en
             ? "Ask about the stated schedule and any applicable deadlines."
-            : "Itanong ang nakasaad na iskedyul at anumang naaangkop na deadline.",
+            : "Itanong kung may deadline at kailan ito.",
         ],
         [
           "cost",
           en
             ? "Ask about eligibility, appointment requirements, and any costs."
-            : "Itanong ang kwalipikasyon, appointment, at anumang bayad.",
+            : "Itanong ang requirements, schedule, at kung may bayad.",
         ],
       ],
     },
@@ -111,8 +111,8 @@ export function PreparationStep({ en }: { en: boolean }) {
             <div className="panel-content">
               <p className="field-hint" style={{ marginBottom: 20 }}>
                 {en
-                  ? "Make these your own. Your edits stay unchanged when switching languages."
-                  : "Baguhin ayon sa kailangan mo. Mananatili ang mga edit mo kahit magpalit ng wika."}
+                  ? "Edit these questions or add your own."
+                  : "I-edit ang mga tanong o magdagdag ng sarili mo."}
               </p>
               {questions.map((q, i) => (
                 <div className="question-row" key={i}>
@@ -189,7 +189,7 @@ export function PreparationStep({ en }: { en: boolean }) {
               <p>
                 {en
                   ? "Start with official legal help resources. Confirm eligibility and availability directly with the office."
-                  : "Magsimula sa mga opisyal na mapagkukunan ng legal na tulong. Kumpirmahin ang kwalipikasyon at availability sa mismong opisina."}
+                  : "Tingnan ang official contacts ng PAO at IBP. Itanong muna ang requirements at schedule."}
               </p>
               <Link className="button button-secondary" href="/help">
                 {en ? "Explore legal help" : "Tingnan ang legal na tulong"}
@@ -199,15 +199,11 @@ export function PreparationStep({ en }: { en: boolean }) {
           </section>
           <section className="panel help-card">
             <div className="panel-content">
-              <h3>
-                {en
-                  ? "Keep your preparation together."
-                  : "Pagsama-samahin ang paghahanda."}
-              </h3>
+              <h3>{en ? "Save or share" : "I-save o ibahagi"}</h3>
               <p>
                 {en
-                  ? "The report and family-share services are being connected. You can review and edit everything here in the meantime."
-                  : "Ikinokonekta pa ang report at family-share services. Maaari mong suriin at i-edit ang lahat dito habang hinihintay."}
+                  ? "PDF and sharing are not connected yet."
+                  : "Hindi pa available ang PDF at share link."}
               </p>
               <ExportControls en={en} />
             </div>

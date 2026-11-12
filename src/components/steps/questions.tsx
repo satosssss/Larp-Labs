@@ -89,14 +89,12 @@ export function QuestionsStep({ en }: { en: boolean }) {
                   <Icon name="chat" size={24} />
                 </span>
                 <h2>
-                  {en
-                    ? "What would you like to clarify?"
-                    : "Ano ang gusto mong linawin?"}
+                  {en ? "Ask about your notice" : "Magtanong tungkol sa notice"}
                 </h2>
                 <p>
                   {en
-                    ? "Start with a suggested question about this fictional notice."
-                    : "Magsimula sa mungkahing tanong tungkol sa kathang-isip na notice na ito."}
+                    ? "Choose a question below, or write your own."
+                    : "Pumili ng tanong sa ibaba, o i-type ang tanong mo."}
                 </p>
               </div>
             ) : (
@@ -122,7 +120,7 @@ export function QuestionsStep({ en }: { en: boolean }) {
                       }}
                     >
                       <Icon name="link" size={14} />
-                      {en ? "View source" : "Tingnan ang pinagmulan"}
+                      {en ? "View source" : "Saan ito nakasulat?"}
                     </button>
                   )}
                 </div>
@@ -175,16 +173,11 @@ export function QuestionsStep({ en }: { en: boolean }) {
               <Icon name="arrow" />
             </button>
           </form>
-          <p className="field-hint" style={{ padding: "0 20px 15px" }}>
-            {input.length}/500 ·{" "}
-            {en
-              ? mode === "sample"
-                ? "Sample answers only. Not legal advice."
-                : "Document information, not legal advice."
-              : mode === "sample"
-                ? "Mga sample na sagot lamang. Hindi legal advice."
-                : "Impormasyon sa dokumento, hindi legal advice."}
-          </p>
+          {input.length > 400 && (
+            <p className="field-hint" style={{ padding: "0 20px 15px" }}>
+              {input.length}/500
+            </p>
+          )}
           {error && (
             <p className="notice-alert" role="alert">
               {error}
@@ -193,7 +186,7 @@ export function QuestionsStep({ en }: { en: boolean }) {
         </section>
         <aside>
           <p className="eyebrow" style={{ marginBottom: 15 }}>
-            {en ? "A LITTLE CONTEXT HELPS" : "KAUNTING KONTEKSTO MUNA"}
+            {en ? "A LITTLE CONTEXT HELPS" : "DALAWANG MABILIS NA TANONG"}
           </p>
           {[
             en
@@ -201,7 +194,7 @@ export function QuestionsStep({ en }: { en: boolean }) {
               : "Nakasagot ka na ba sa notice?",
             en
               ? "Do you have related documents?"
-              : "May iba ka bang kaugnay na dokumento?",
+              : "May iba ka pang dokumento tungkol dito?",
           ].map((q, i) => (
             <section className="follow-up" key={q}>
               <h3>{q}</h3>
@@ -216,7 +209,7 @@ export function QuestionsStep({ en }: { en: boolean }) {
                     {
                       (en
                         ? ["Yes", "No", "Skip for now"]
-                        : ["Oo", "Hindi", "Laktawan muna"])[j]
+                        : ["Oo", "Hindi", "Skip muna"])[j]
                     }
                   </button>
                 ))}
@@ -225,8 +218,8 @@ export function QuestionsStep({ en }: { en: boolean }) {
           ))}
           <p className="field-hint">
             {en
-              ? "Answer or skip both questions to continue. Your choices stay in this tab."
-              : "Sagutin o laktawan ang dalawang tanong para magpatuloy. Nasa tab na ito lang ang mga sagot mo."}
+              ? "Answer or skip both to continue."
+              : "Sagutin o i-skip ang dalawa para makatuloy."}
           </p>
         </aside>
       </div>
@@ -253,7 +246,7 @@ export function QuestionsStep({ en }: { en: boolean }) {
           disabled={answers.some((a) => a === null)}
           onClick={() => go(4)}
         >
-          {en ? "Prepare for legal help" : "Maghanda para sa legal na tulong"}
+          {en ? "Continue to checklist" : "Ituloy sa checklist"}
           <Icon name="arrow" />
         </button>
       </div>

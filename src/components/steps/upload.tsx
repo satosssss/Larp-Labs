@@ -74,7 +74,7 @@ export function UploadStep({ en }: { en: boolean }) {
         setError(
           en
             ? "Document reading is not connected yet. Your file has not been uploaded. You can try the sample or find legal help."
-            : "Hindi pa nakakonekta ang pagbasa ng dokumento. Hindi na-upload ang file mo. Maaari mong subukan ang halimbawa o humanap ng legal na tulong.",
+            : "Hindi pa nakakonekta ang pagbasa. Hindi na-upload ang file mo. Subukan muna ang demo.",
         );
     } finally {
       if (!controller.signal.aborted) setBusy(false);
@@ -100,16 +100,6 @@ export function UploadStep({ en }: { en: boolean }) {
             <span className="upload-icon">
               <Icon name="upload" size={26} />
             </span>
-            <h2>
-              {en
-                ? "Let’s start with your document."
-                : "Magsimula sa dokumento mo."}
-            </h2>
-            <p>
-              {en
-                ? "Drop your file here, or choose one below."
-                : "I-drag ang file dito, o pumili mula sa device."}
-            </p>
             <input
               ref={input}
               className="sr-only"
@@ -134,8 +124,8 @@ export function UploadStep({ en }: { en: boolean }) {
             <Icon name="shield" size={18} />
             <span>
               {en
-                ? "This frontend preview keeps your file in this tab. When document reading is connected, the original will be sent to OCR; review the data-use notice before proceeding."
-                : "Sa frontend preview na ito, nasa tab na ito lang ang file mo. Kapag nakakonekta na ang pagbasa, ipapadala ang orihinal sa OCR; basahin muna ang paunawa sa paggamit ng data."}
+                ? "Preview only: your file stays in this tab. Document reading is not connected yet."
+                : "Preview pa lang: nasa tab na ito lang ang file mo. Hindi pa nakakonekta ang pagbasa ng dokumento."}
             </span>
           </p>
           {file && (
@@ -196,36 +186,25 @@ export function UploadStep({ en }: { en: boolean }) {
           )}
         </div>
         <aside className="side-note">
-          <p className="eyebrow">
-            {en ? "A GOOD PLACE TO START" : "BAGO TAYO MAGSIMULA"}
-          </p>
           <h2>
-            {en
-              ? "A clearer photo helps."
-              : "Mas malinaw na larawan, mas maayos na pagbasa."}
+            {en ? "A clearer photo helps." : "Tips para malinaw ang photo"}
           </h2>
           <ul>
-            <li>
-              {en ? "Include the whole page." : "Isama ang buong pahina."}
-            </li>
+            <li>{en ? "Include the whole page." : "Isama ang buong page."}</li>
             <li>
               {en
                 ? "Use good light, without glare."
-                : "Gumamit ng maliwanag na lugar."}
+                : "Kunan sa maliwanag na lugar."}
             </li>
             <li>
               {en
                 ? "Make sure the text is readable."
-                : "Tiyaking nababasa ang mga salita."}
+                : "Dapat malinaw ang mga salita."}
             </li>
           </ul>
           <div className="sample-callout">
             <h3>{en ? "Just exploring?" : "Gusto mo munang subukan?"}</h3>
-            <p>
-              {en
-                ? "Walk through a fictional notice, with no upload needed."
-                : "Tingnan kung paano ito gumagana gamit ang isang kathang-isip na notice."}
-            </p>
+            <p>{en ? "No file needed." : "Walang kailangang i-upload."}</p>
             <button
               className="text-button"
               onClick={() => useFlow.getState().startSample()}

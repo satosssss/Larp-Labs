@@ -23,10 +23,10 @@ export function ReviewStep({ en }: { en: boolean }) {
           <div className="panel-header">
             <span>
               <Icon name="file" size={16} />{" "}
-              {en ? "Original document" : "Orihinal na dokumento"}
+              {en ? "Original document" : "Original na dokumento"}
             </span>
             {mode === "sample" && (
-              <span className="pill">{en ? "Fictional" : "Kathang-isip"}</span>
+              <span className="pill">{en ? "Fictional" : "Demo"}</span>
             )}
           </div>
           <div
@@ -52,7 +52,7 @@ export function ReviewStep({ en }: { en: boolean }) {
                   <img
                     src={preview}
                     className="local-preview"
-                    alt={en ? "Original document" : "Orihinal na dokumento"}
+                    alt={en ? "Original document" : "Original na dokumento"}
                   />
                 )}
                 <a
@@ -78,13 +78,11 @@ export function ReviewStep({ en }: { en: boolean }) {
         </section>
         <section className="panel">
           <div className="panel-header">
-            <span>
-              {en ? "Check the extracted text" : "Suriin ang nabasang teksto"}
-            </span>
+            <span>{en ? "Check the extracted text" : "Nabasang text"}</span>
             <Icon name="checks" size={18} />
           </div>
           <div className="panel-content">
-            <label htmlFor="review-text" className="field-label">
+            <label htmlFor="review-text" className="sr-only">
               {en
                 ? "Correct anything that does not match."
                 : "Itama ang anumang hindi tugma sa dokumento."}
@@ -98,18 +96,21 @@ export function ReviewStep({ en }: { en: boolean }) {
             />
             <p id="review-hint" className="field-hint">
               {en
-                ? "No OCR confidence score is available. Please check names, dates, and amounts carefully."
-                : "Walang available na confidence score. Suriing mabuti ang pangalan, petsa, at halaga."}
+                ? "Check names, dates, and amounts. You can edit the text above."
+                : "I-check ang mga pangalan, petsa, at halaga. Puwede mong i-edit ang text sa itaas."}
             </p>
-            <p className="field-hint">
-              {text.length.toLocaleString()} / 100,000{" "}
-              {en ? "characters" : "karakter"}
-            </p>
+            {text.length > 90000 && (
+              <p className="field-hint">
+                {text.length.toLocaleString()} / 100,000{" "}
+                {en ? "characters" : "karakter"}
+              </p>
+            )}
+
             {changed && (
               <div className="notice-alert" role="status">
                 {en
                   ? "You changed the example. Its prepared explanation is now cleared; this sample cannot generate a new one."
-                  : "Nabago ang halimbawa. Na-clear ang nakahandang paliwanag; hindi makakagawa ng bagong paliwanag ang sample na ito."}
+                  : "Na-edit ang demo. Ibalik ang original para makita ulit ang sample na paliwanag."}
                 <br />
                 <button className="text-button" onClick={startSample}>
                   {en
@@ -131,7 +132,7 @@ export function ReviewStep({ en }: { en: boolean }) {
           onClick={confirm}
           disabled={!validReview(text) || changed}
         >
-          {en ? "Text is correct — explain" : "Tama ang text — ipaliwanag"}
+          {en ? "Looks right — explain" : "Tama na — ipaliwanag"}
           <Icon name="arrow" />
         </button>
       </div>

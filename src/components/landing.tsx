@@ -1,16 +1,12 @@
 "use client";
 import Link from "next/link";
 import { usePreferences } from "@/lib/preferences";
-import { Icon } from "./ui";
+import { Icon, Disclaimer } from "./ui";
 export function Landing() {
   const en = usePreferences((s) => s.language) === "en";
   return (
     <main id="main">
       <section className="hero">
-        <div className="eyebrow">
-          <span className="status-dot" />
-          {en ? "A clearer way forward" : "Kasama mo sa pag-unawa"}
-        </div>
         <h1>
           {en ? (
             <>
@@ -29,7 +25,7 @@ export function Landing() {
         <p className="hero-description">
           {en
             ? "From confusing words to something you understand. Get a simple explanation and prepare for your next conversation."
-            : "Mula sa nakakalitong salita, tungo sa malinaw na pag-unawa. Unawain ang iyong dokumento at maghanda sa susunod na hakbang."}
+            : "May hindi ka maintindihan sa notice mo? I-upload ito para makita ang simpleng paliwanag at kung saan puwedeng humingi ng tulong."}
         </p>
         <div className="hero-buttons">
           <Link className="button" href="/notice">
@@ -47,13 +43,14 @@ export function Landing() {
           <span>·</span>
           {en ? "Filipino & English" : "Filipino at English"}
         </p>
+        <Disclaimer en={en} />
         <HeroPreview en={en} />
         <div className="hero-bottom">
           <span>
             01 /{" "}
             {en
               ? "UNDERSTAND, ONE STEP AT A TIME"
-              : "UNAWAIN, ISANG HAKBANG SA BAWAT PAGKAKATAON"}
+              : "ISANG HAKBANG, MAS MALINAW"}
           </span>
           <span className="down-arrow">↓</span>
         </div>
@@ -62,9 +59,7 @@ export function Landing() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">
-              {en
-                ? "FROM CONFUSION TO CLARITY"
-                : "MULA SA TANONG, TUNGO SA LINAW"}
+              {en ? "FROM CONFUSION TO CLARITY" : "PAANO ITO GUMAGANA"}
             </p>
             <h2>
               {en
@@ -75,7 +70,7 @@ export function Landing() {
           <p>
             {en
               ? "Take it one step at a time. You are always in control of what you read and review."
-              : "Dahan-dahan lang. Ikaw ang may kontrol sa bawat impormasyong binabasa at sinusuri mo."}
+              : "Ikaw ang magche-check ng text. Kami ang tutulong magpaliwanag."}
           </p>
         </div>
         <div className="steps-grid">
@@ -85,21 +80,21 @@ export function Landing() {
               title: en ? "Bring your document" : "I-upload ang dokumento",
               text: en
                 ? "Start with a photo or PDF of your notice. We’ll help you read it."
-                : "Magsimula sa larawan o PDF ng iyong notice. Tutulungan kang basahin ang nilalaman.",
+                : "Pumili ng photo o PDF ng notice mo.",
             },
             {
               icon: "checks" as const,
               title: en ? "Check, then understand" : "Suriin at unawain",
               text: en
                 ? "Check the extracted text, then explore plain-language explanations with their source."
-                : "Itama ang nabasang teksto, saka tingnan ang simpleng paliwanag at ang pinagmulan nito.",
+                : "I-check ang text, tapos basahin ang paliwanag. Puwede mong tingnan kung saan ito galing.",
             },
             {
               icon: "chat" as const,
               title: en ? "Prepare your next step" : "Maghanda sa susunod",
               text: en
                 ? "Organize questions and what to bring when you speak to a legal professional."
-                : "Ihanda ang mga tanong at dokumentong dadalhin sa pakikipag-usap sa abogado.",
+                : "Gumawa ng checklist at mga tanong para sa abogado.",
             },
           ].map((s, i) => (
             <article className="how-step" key={s.title}>
@@ -125,15 +120,13 @@ export function Landing() {
           <span>
             {en
               ? "See where explanations come from"
-              : "May pinagmulan ang paliwanag"}
+              : "Makikita kung saan galing ang paliwanag"}
           </span>
         </div>
         <div>
           <Icon name="shield" />
           <span>
-            {en
-              ? "You check. You stay in control."
-              : "Ikaw ang susuri. Ikaw ang may kontrol."}
+            {en ? "You check. You stay in control." : "Ikaw ang magche-check."}
           </span>
         </div>
       </section>
@@ -150,11 +143,6 @@ export function Landing() {
           {en ? "Understand my document" : "Unawain ang dokumento"}
           <Icon name="arrow" />
         </Link>
-        <p>
-          {en
-            ? "LegaLinaw provides information, not legal advice."
-            : "Impormasyon ang hatid ng LegaLinaw, hindi legal advice."}
-        </p>
       </section>
     </main>
   );

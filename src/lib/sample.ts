@@ -33,7 +33,7 @@ export const sampleAnalysis = (language: Language): Analysis => ({
     language === "fil" ? "Paanyaya mula sa barangay" : "Barangay invitation",
   summary:
     language === "fil"
-      ? "Inaanyayahan kang makipag-usap sa barangay tungkol sa isang usapin sa inyong kapitbahay. May nakasaad na petsa, oras, at lugar sa liham."
+      ? "Iniimbitahan kang makipag-usap sa barangay tungkol sa isang usapin sa kapitbahay mo. Nasa notice ang petsa, oras, at lugar."
       : "You are invited to a conversation at the barangay about a matter involving a neighbor. The letter states a date, time, and location.",
   quote: SAMPLE_QUOTE,
   explanation:
@@ -45,17 +45,17 @@ export const sampleAnalysis = (language: Language): Analysis => ({
   sender: "Tanggapan ng Barangay Malinaw",
 });
 export const sampleQuestions = [
-  "Ano ang ibig sabihin ng paanyayang ito?",
+  "Ano ang ibig sabihin ng notice na ito?",
   "Anong mga dokumento ang dapat kong ihanda?",
   "May deadline ba na kailangan kong malaman?",
-  "Ano ang mga posibleng susunod na hakbang?",
+  "Ano ang puwede kong gawin pagkatapos nito?",
   "May bayad ba ang konsultasyon?",
 ];
 export const suggestions = {
   fil: [
-    "Ano ang pakay ng liham?",
+    "Tungkol saan ang notice?",
     "Kailan ang pag-uusap?",
-    "Ano ang nakasaad na dadalhin?",
+    "Ano ang kailangan kong dalhin?",
   ],
   en: [
     "What is the letter about?",
@@ -89,7 +89,7 @@ export function sampleAnswer(
   return {
     text:
       language === "fil"
-        ? "Halimbawa lamang ito at may nakahandang sagot lang sa mga mungkahing tanong. Hindi pa nakakonekta ang live na document chat."
+        ? "Demo lang ito: may nakahandang sagot lang sa mga tanong sa ibaba. Hindi pa nakakonekta ang live chat."
         : "This sample has prepared answers only for the suggested questions. Live document chat is not connected yet.",
   };
 }

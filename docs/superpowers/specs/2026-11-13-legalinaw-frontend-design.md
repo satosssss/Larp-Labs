@@ -148,3 +148,7 @@ The frontend can be reviewable before real endpoints are ready. Final end-to-end
 ## Builder discretion
 
 The builder may choose component decomposition, icon package, CSS organization, and exact spacing/breakpoints within this direction. Prefer minimal dependencies and readable components. The builder may choose the reliable supported Node runtime and font-loading method during setup. Do not change application scope or backend contracts without coordination.
+
+## User-requested refinement — 2026-11-13
+
+Jay requested conversational Filipino, less repeated text in the five-step process, equally sized review panels, a clickable explanation of the legal-advice limitation, removal of the landing eyebrow, and stronger button/form color distinction. The update adds an expandable explanation on the landing page and existing disclaimer surfaces, uses warm amber (#F4BD63) with navy text for primary actions, and introduces mint form surfaces. The original document text remains untouched. The added accent extends the original four-color palette at Jay's request.
