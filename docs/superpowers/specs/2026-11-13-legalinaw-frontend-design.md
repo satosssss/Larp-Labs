@@ -1,7 +1,7 @@
 # LegaLinaw frontend design — for Jay's review
 
 Date: 2026-11-13
-Status: Proposed; awaiting approval before implementation
+Status: Approved by Jay on 2026-11-13; headline updated on approval
 Scope: Jay's frontend and UI/UX work in the existing Larp-Labs repository. Local development and preview; deployment belongs to San Gaspar.
 
 ## Intent
@@ -40,7 +40,7 @@ Use the reference's centered headline, thin framing lines, quiet navigation, and
 
 - Header: wordmark, How it works / Paano gamitin, Legal help / Legal na tulong, language switch, and primary start action. Collapse appropriately on mobile without hiding the primary action.
 - Hero eyebrow: a plain description such as “Gabay sa pag-unawa ng dokumento.”
-- Headline: “Mas malinaw na dokumento. Mas handang kumilos.”
+- Headline: “Palinawin natin ang legal notice mo.”
 - Supporting copy: explain upload, checking extracted text, and plain-language explanations in two short sentences.
 - Primary action: “Unawain ang dokumento” leads to upload.
 - Secondary action: “Subukan ang halimbawa” enters an explicitly labeled fictional sample journey.
