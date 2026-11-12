@@ -8,8 +8,23 @@ import { Icon } from "./ui";
 export function Brand() {
   return (
     <Link className="brand" href="/" aria-label="LegaLinaw home">
-      Lega<span>Linaw</span>
-      <span className="brand-dot">✳</span>
+      <Image
+        className="brand-emblem"
+        src="/brand/emblem.png"
+        alt=""
+        width={1211}
+        height={958}
+        priority
+      />
+      <span className="brand-wordmark">
+        <Image
+          src="/brand/wordmark.png"
+          alt=""
+          width={2003}
+          height={653}
+          priority
+        />
+      </span>
     </Link>
   );
 }

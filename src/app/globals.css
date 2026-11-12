@@ -103,20 +103,31 @@ p {
   background: var(--canvas);
 }
 .brand {
-  font-size: 1.65rem;
-  letter-spacing: -0.065em;
-  font-weight: 750;
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
-.brand > span {
-  color: var(--teal);
+.brand-emblem {
+  width: 42px;
+  height: auto;
 }
-.brand .brand-dot {
-  font-size: 1.25rem;
-  margin-left: 5px;
-  vertical-align: top;
+/* Frame the supplied wordmark's transparent padding without altering the asset. */
+.brand-wordmark {
   position: relative;
-  top: 2px;
+  display: block;
+  width: 148px;
+  height: 30px;
+  overflow: hidden;
+}
+.brand-wordmark img {
+  position: absolute;
+  width: 166px;
+  height: auto;
+  max-width: none;
+  left: -10px;
+  top: -14px;
 }
 .desktop-nav {
   display: flex;
@@ -1541,10 +1552,19 @@ details p {
     padding: 0 20px;
   }
   .brand {
-    font-size: 1.45rem;
+    gap: 8px;
   }
-  .brand .brand-dot {
-    font-size: 1rem;
+  .brand-emblem {
+    width: 32px;
+  }
+  .brand-wordmark {
+    width: 120px;
+    height: 25px;
+  }
+  .brand-wordmark img {
+    width: 135px;
+    left: -8px;
+    top: -11px;
   }
   .desktop-nav {
     display: none;
