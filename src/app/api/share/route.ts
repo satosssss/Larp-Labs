@@ -31,14 +31,15 @@ export const POST = withHandler("share", RULES.write, async (req) => {
   if (!a || typeof a !== "object")
     throw new ApiFailure("BAD_REQUEST", '"analysis" is required.');
   const type = clip(a.type, 120);
-  if (!type) throw new ApiFailure("BAD_REQUEST", '"analysis.type" is required.');
+  if (!type)
+    throw new ApiFailure("BAD_REQUEST", '"analysis.type" is required.');
 
   const dates = [clip(a.date, 80), clip(a.time, 80)].filter(Boolean);
   const nextSteps = Array.isArray(b.questions)
     ? b.questions
         .map((q) => clip(q, 300))
         .filter(Boolean)
-        .slice(0, 10)
+        .slice(0, 20)
     : [];
   const payload: SharedSummary = {
     language: b.language,
@@ -49,6 +50,7 @@ export const POST = withHandler("share", RULES.write, async (req) => {
 
   const { id: owner, headers } = ensureSession(req);
   const rec = await shareStore.create(owner, payload, SHARE_TTL_HOURS);
-  const url = `${req.nextUrl.origin}/s/${rec.id}`;
+  // Let the browser resolve its public origin, including behind a reverse proxy.
+  const url = `/s/${rec.id}`;
   return ok({ id: rec.id, url, expiresAt: rec.expiresAt }, { headers });
 });

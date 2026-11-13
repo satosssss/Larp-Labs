@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useFlow } from "@/lib/flow";
 import {
   gateway,
-  safeExternalUrl,
+  safeShareUrl,
   type ShareLink,
   type ReportInput,
 } from "@/lib/gateway";
@@ -23,6 +23,7 @@ export function ExportControls({ en }: { en: boolean }) {
     const s = useFlow.getState();
     return {
       analysis: s.analysis,
+      sample: s.mode === "sample",
       questions: s.questions.filter((q) => q.trim()),
       checked: s.checked,
       language: s.language,
@@ -39,8 +40,10 @@ export function ExportControls({ en }: { en: boolean }) {
         const a = document.createElement("a");
         a.href = url;
         a.download = "legalinaw-summary.pdf";
+        document.body.appendChild(a);
         a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
         setStatus(
           en
             ? "Your PDF download has started."
@@ -48,12 +51,10 @@ export function ExportControls({ en }: { en: boolean }) {
         );
       } else if (kind === "share") {
         const result = await gateway.share(payload());
-        if (
-          !safeExternalUrl(result.url) ||
-          !Number.isFinite(Date.parse(result.expiresAt))
-        )
+        const url = safeShareUrl(result.url, window.location.origin);
+        if (!url || !Number.isFinite(Date.parse(result.expiresAt)))
           throw new Error("Invalid share");
-        setShare(result);
+        setShare({ ...result, url });
         setNow(Date.now());
       } else if (share) {
         await gateway.revoke(share.id);
@@ -64,12 +65,12 @@ export function ExportControls({ en }: { en: boolean }) {
       setStatus(
         en
           ? kind === "report"
-            ? "PDF download is not connected or could not finish. Your edits are still here."
+            ? "PDF download could not finish. Try again; your edits are still here."
             : kind === "share"
               ? "Sharing is unavailable. No usable public link was returned."
               : "Could not confirm that sharing stopped. Retry; the link may still be active."
           : kind === "report"
-            ? "Hindi pa nakakonekta o hindi natapos ang PDF download. Nandito pa rin ang mga edit mo."
+            ? "Hindi natapos ang PDF download. Subukan muli; nandito pa rin ang mga edit mo."
             : kind === "share"
               ? "Hindi available ang pagbabahagi. Walang naibalik na magagamit na pampublikong link."
               : "Hindi makumpirmang itinigil ang pagbabahagi. Subukan muli; maaaring aktibo pa ang link.",
@@ -136,6 +137,11 @@ export function ExportControls({ en }: { en: boolean }) {
                 readOnly
                 onFocus={(e) => e.target.select()}
               />
+              <p className="field-hint">
+                {en
+                  ? "Anyone with this link can view the shared questions. Links may stop working if the server restarts. A localhost link only works on this computer."
+                  : "Makikita ng sinumang may link ang ibinahaging mga tanong. Maaaring mawala ang link kapag nag-restart ang server. Sa computer na ito lang gagana ang localhost link."}
+              </p>
               <p className="field-hint">
                 {en ? "Expires" : "Mag-e-expire"}:{" "}
                 {new Date(share.expiresAt).toLocaleString(

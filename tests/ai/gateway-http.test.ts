@@ -25,8 +25,8 @@ describe("browser gateway adapter", () => {
     expect(gateway.extract).toBe(aiGateway.extract);
     expect(gateway.analyze).toBe(aiGateway.analyze);
     expect(gateway.chat).toBe(aiGateway.chat);
-    // Not built yet (directory and PDF export) stays disconnected.
-    for (const method of [gateway.providers, gateway.report])
+    // The provider directory remains disconnected; PDF export is now implemented.
+    for (const method of [gateway.providers])
       await expect((method as () => Promise<unknown>)()).rejects.toThrow(
         "Service not connected",
       );

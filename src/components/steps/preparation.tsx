@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { preparationGroups } from "@/lib/preparation";
 import { useState } from "react";
 import { useFlow } from "@/lib/flow";
 import { ExportControls } from "../export-controls";
@@ -7,59 +8,7 @@ import { Icon } from "../ui";
 export function PreparationStep({ en }: { en: boolean }) {
   const { checked, toggleCheck, questions, setQuestions, go } = useFlow();
   const [newQuestion, setNewQuestion] = useState("");
-  const groups = [
-    {
-      title: en ? "Who to contact" : "Sino ang kakausapin",
-      items: [
-        [
-          "contact",
-          en
-            ? "Identify a legal help provider to ask about your notice."
-            : "Humanap ng abogado o legal aid office.",
-        ],
-      ],
-    },
-    {
-      title: en ? "What to prepare" : "Ano ang ihahanda",
-      items: [
-        [
-          "notice",
-          en
-            ? "The complete notice and its envelope, if available."
-            : "Ang buong notice at sobre nito, kung mayroon.",
-        ],
-        [
-          "id",
-          en
-            ? "An identification document, if requested by the provider."
-            : "ID, kung hihingin ng opisina.",
-        ],
-        [
-          "related",
-          en
-            ? "Any related documents and your notes."
-            : "Iba pang dokumento at notes tungkol dito.",
-        ],
-      ],
-    },
-    {
-      title: en ? "What to clarify" : "Ano ang lilinawin",
-      items: [
-        [
-          "schedule",
-          en
-            ? "Ask about the stated schedule and any applicable deadlines."
-            : "Itanong kung may deadline at kailan ito.",
-        ],
-        [
-          "cost",
-          en
-            ? "Ask about eligibility, appointment requirements, and any costs."
-            : "Itanong ang requirements, schedule, at kung may bayad.",
-        ],
-      ],
-    },
-  ];
+  const groups = preparationGroups(en);
   function add() {
     if (
       !newQuestion.trim() ||
@@ -202,8 +151,8 @@ export function PreparationStep({ en }: { en: boolean }) {
               <h3>{en ? "Save or share" : "I-save o ibahagi"}</h3>
               <p>
                 {en
-                  ? "PDF and sharing are not connected yet."
-                  : "Hindi pa available ang PDF at share link."}
+                  ? "Download your summary and checklist as a PDF. Sharing includes the notice type, dates and your questions. Remove personal details from questions before sharing."
+                  : "I-download ang buod at checklist bilang PDF. Kasama sa share link ang uri ng notice, petsa at mga tanong mo. Alisin muna ang personal na detalye sa mga tanong."}
               </p>
               <ExportControls en={en} />
             </div>

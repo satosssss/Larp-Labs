@@ -35,7 +35,7 @@ export function SharedSummary({
             </ul>
             <h3>{en ? "Preparation" : "Paghahanda"}</h3>
             <ul>
-              {summary.nextSteps.slice(0, 10).map((s, i) => (
+              {summary.nextSteps.slice(0, 20).map((s, i) => (
                 <li key={i}>{s}</li>
               ))}
             </ul>

@@ -77,7 +77,7 @@ test("sample journey, source, chat and preparation", async ({
   await expect(page.getByText("Checklist sa paghahanda")).toBeVisible();
   await noOverflow(page);
   await page.getByRole("button", { name: "PDF", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Hindi pa nakakonekta");
+  await expect(page.getByRole("status")).toContainText("Sinimulan ang pag-download");
 });
 test("editing sample invalidates explanation and restores safely", async ({
   page,

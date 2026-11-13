@@ -15,9 +15,11 @@
     "format": "prettier --write src tests *.ts"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "1.1.1",
     "geist": "1.9.2",
     "lucide-react": "1.72.0",
     "next": "16.4.6",
+    "pdf-lib": "1.17.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "zustand": "5.1.0"

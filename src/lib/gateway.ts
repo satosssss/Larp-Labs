@@ -16,6 +16,7 @@ export type Preparation = {
 };
 export type ReportInput = {
   analysis: Analysis | null;
+  sample?: boolean;
   questions: string[];
   checked: string[];
   language: Language;
@@ -112,7 +113,10 @@ export const gateway: NoticeGateway = {
   chat: aiGateway.chat,
   prepare: (input, signal) => call("/api/prepare", json(input), signal),
   providers: unavailable, // pending Supabase directory
-  report: unavailable, // pending PDF export
+  report: async (input) => {
+    const { createReport } = await import("./report");
+    return createReport(input);
+  },
   share: (input) => call("/api/share", json(input)),
   revoke: async (id) => {
     await call(`/api/share/${encodeURIComponent(id)}`, { method: "DELETE" });
@@ -125,6 +129,27 @@ export function safeExternalUrl(value: string): string | null {
   try {
     const url = new URL(value);
     return url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Only share links for this app are accepted; provider links remain HTTPS-only. */
+export function safeShareUrl(value: string, origin: string): string | null {
+  try {
+    const url = new URL(value, origin);
+    const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+    if (
+      url.origin !== new URL(origin).origin ||
+      url.username ||
+      url.password ||
+      !/^\/s\/[A-Za-z0-9_-]+$/.test(url.pathname) ||
+      url.search ||
+      url.hash ||
+      !(url.protocol === "https:" || (url.protocol === "http:" && local))
+    )
+      return null;
+    return url.href;
   } catch {
     return null;
   }

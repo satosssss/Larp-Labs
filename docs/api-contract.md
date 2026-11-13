@@ -103,3 +103,6 @@ Implemented in `src/server/ai/` and called from the browser by `aiGateway` (`src
 
 - The share store and rate limiter are in-memory today. On Vercel each serverless instance has its own memory, so **links will not persist reliably and limits are best-effort until the Supabase adapters replace them**. The interfaces (`ShareStore`, `rateLimit`) are the swap points.
 - `SESSION_SECRET` (32+ chars) is required in production.
+
+
+Share responses return an origin-relative `url` such as `/s/<id>`. The browser resolves it against its current public origin so local hosts and reverse proxies work consistently. Up to 20 consultation questions are included. Storage is currently in-memory; links can disappear on restart. PDF export is generated locally in the browser and requires no report endpoint.

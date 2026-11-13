@@ -2173,3 +2173,40 @@ dialog.modal::backdrop {
     flex: initial;
   }
 }
+
+/* Keep accessibility controls separate from the brand on narrow screens. */
+@media (max-width: 600px) {
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .header-actions {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    gap: 8px 12px;
+    align-items: center;
+  }
+  .header-actions > .language-button {
+    justify-self: start;
+  }
+  .header-actions > .text-scale,
+  .header-actions > .button {
+    justify-self: end;
+    max-width: 100%;
+  }
+  .header .legal-disclosure {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .header .legal-disclosure summary {
+    width: 100%;
+  }
+  .header .legal-disclosure-body {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+    max-height: 55vh;
+  }
+}

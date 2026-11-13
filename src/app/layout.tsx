@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { Header, Footer } from "@/components/shell";
 import "./globals.css";
 export const metadata: Metadata = {
+  icons: { icon: { url: "/brand/emblem.png", type: "image/png" } },
   title: "LegaLinaw — Palinawin natin ang legal notice mo.",
   description:
     "Unawain ang iyong legal notice sa simpleng Filipino o English. Suriin ang teksto, alamin ang nakasaad, at maghanda para sa legal na tulong.",
