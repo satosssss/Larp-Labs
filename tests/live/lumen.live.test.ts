@@ -3,7 +3,8 @@
  *
  *   RUN_LIVE_LUMEN=1 npx vitest run tests/live
  *
- * They need a local .env with LUMEN_API_KEY, LUMEN_API_SECRET and
+ * They need a local .env.local (or .env) with LUMEN_API_KEY,
+ * LUMEN_API_SECRET and
  * LUMEN_API_ORIGIN. Each run spends roughly 30 API credits, uploads a fictional
  * notice and creates chat sessions that Lumen retains. They are skipped by
  * default, so normal test runs never touch the network or spend credits.
@@ -27,14 +28,24 @@ import { extractText } from "../../src/server/ai/lumen-ocr";
 
 const enabled = process.env.RUN_LIVE_LUMEN === "1";
 
-/** Minimal .env reader so no extra dependency is needed. Values are never printed. */
+/**
+ * Minimal .env reader so no extra dependency is needed. Values are never
+ * printed. Reads `.env.local` (what `next dev` uses) over `.env`, so the
+ * credentials live in exactly one gitignored file.
+ */
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};
-  for (const line of readFileSync(join(process.cwd(), ".env"), "utf8").split(
-    "\n",
-  )) {
-    const at = line.indexOf("=");
-    if (at > 0) env[line.slice(0, at)] = line.slice(at + 1);
+  for (const name of [".env", ".env.local"]) {
+    let raw: string;
+    try {
+      raw = readFileSync(join(process.cwd(), name), "utf8");
+    } catch {
+      continue; // optional file
+    }
+    for (const line of raw.split("\n")) {
+      const at = line.indexOf("=");
+      if (at > 0) env[line.slice(0, at)] = line.slice(at + 1);
+    }
   }
   return env;
 }
