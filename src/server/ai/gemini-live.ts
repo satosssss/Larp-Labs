@@ -1,7 +1,11 @@
 import type { Prompt, Provenance } from "../../lib/ai-types";
 import type { GeminiConfig } from "./gemini-config";
 import { AiError, type AiErrorCode } from "./errors";
-import { GEMINI_MAX_OUTPUT_TOKENS, GEMINI_MAX_PROMPT_CHARS } from "./limits";
+import {
+  GEMINI_HEDGE_AFTER_MS,
+  GEMINI_MAX_OUTPUT_TOKENS,
+  GEMINI_MAX_PROMPT_CHARS,
+} from "./limits";
 import type { ChatInput, ChatModel, ChatOutput } from "./lumen-client";
 
 /**
@@ -110,17 +114,87 @@ export class LiveGeminiClient implements ChatModel {
   // Held privately and never serialized.
   readonly #config: GeminiConfig;
   readonly #fetch: FetchLike;
+  /** 0 disables hedging (tests); see GEMINI_HEDGE_AFTER_MS for the reason. */
+  readonly #hedgeAfterMs: number;
 
   constructor(
     config: GeminiConfig,
-    options: { fetch?: FetchLike } = {},
+    options: { fetch?: FetchLike; hedgeAfterMs?: number } = {},
   ) {
     this.#config = config;
     this.#fetch = options.fetch ?? fetch;
+    this.#hedgeAfterMs = options.hedgeAfterMs ?? GEMINI_HEDGE_AFTER_MS;
   }
 
+  /**
+   * Sends the request, and sends it a second time (in parallel) if the first
+   * is still pending after `hedgeAfterMs`. The first answer wins and the other
+   * request is aborted, so a stalled upstream call cannot hold the user for the
+   * full timeout. A failure only surfaces once no attempt can still answer.
+   */
   async chat(input: ChatInput): Promise<ChatOutput> {
-    const { prompt, signal } = input;
+    if (!(this.#hedgeAfterMs > 0)) return this.#generate(input, input.signal);
+
+    const attempts: AbortController[] = [];
+    const onOuterAbort = () => {
+      for (const attempt of attempts) attempt.abort();
+    };
+    input.signal?.addEventListener("abort", onOuterAbort, { once: true });
+
+    const launch = () => {
+      const attempt = new AbortController();
+      attempts.push(attempt);
+      // The caller may have aborted between two launches.
+      if (input.signal?.aborted) attempt.abort();
+      return this.#generate(input, attempt.signal);
+    };
+
+    let hedge: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await new Promise<ChatOutput>((resolve, reject) => {
+        let settled = false;
+        let launched = 0;
+        let failed = 0;
+        let lastError: unknown;
+
+        const finish = (settle: () => void) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(hedge);
+          settle();
+        };
+
+        const start = () => {
+          launched += 1;
+          launch().then(
+            (out) => finish(() => resolve(out)),
+            (error) => {
+              failed += 1;
+              lastError = error;
+              // Give up only when every attempt so far has failed.
+              if (failed === launched) finish(() => reject(lastError));
+            },
+          );
+        };
+
+        start();
+        hedge = setTimeout(() => {
+          if (!settled) start();
+        }, this.#hedgeAfterMs);
+      });
+    } finally {
+      clearTimeout(hedge);
+      input.signal?.removeEventListener("abort", onOuterAbort);
+      // Cancels the loser; a no-op for requests that already finished.
+      for (const attempt of attempts) attempt.abort();
+    }
+  }
+
+  async #generate(
+    input: ChatInput,
+    signal: AbortSignal | undefined,
+  ): Promise<ChatOutput> {
+    const { prompt } = input;
     const body = buildGeminiRequest(prompt);
     const url =
       `${this.#config.origin}/v1beta/models/` +

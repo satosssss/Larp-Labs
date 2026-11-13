@@ -90,6 +90,7 @@ Implemented in `src/server/ai/` and called from the browser by `aiGateway` (`src
 - Upload rules: content-sniffed JPEG, PNG or PDF, up to 10 MB and 10 pages. Held in memory only. HEIC is not accepted yet.
 - Run with `LUMEN_MODE=mock` and `GEMINI_MODE=mock` for the whole flow with clearly labeled fake clients. Missing live credentials return `not_configured`; they never fall back to mock.
 - Gemini configuration: `GEMINI_API_KEY` (required live), `GEMINI_MODEL` (default `gemini-3.1-flash-lite`), optional `GEMINI_API_ORIGIN`. The key is sent only in the `x-goog-api-key` header.
+- Latency: `gemini-3.1-flash-lite` answers in ~1-2s but occasionally stalls 15-35s on the same prompt. If a reasoning request is still pending after 5s, a second identical request is sent and the first answer wins; the loser is aborted. Both calls are stateless, so the duplicate cannot double-apply anything. The overall budget is 45s.
 
 ## For Members 1 and 2
 

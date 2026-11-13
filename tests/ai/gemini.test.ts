@@ -246,6 +246,97 @@ describe("Gemini configuration", () => {
   });
 });
 
+describe("hedging a stalled request", () => {
+  const ok = () =>
+    Response.json({
+      candidates: [
+        { content: { parts: [{ text: '{"summary":"second"}' }] }, finishReason: "STOP" },
+      ],
+    });
+
+  it("does not duplicate a request that answers promptly", async () => {
+    const fake = fakeGemini();
+    const client = new LiveGeminiClient(CONFIG, {
+      fetch: fake.fetch,
+      hedgeAfterMs: 50,
+    });
+    await client.chat({ prompt: prompt() });
+    await new Promise((r) => setTimeout(r, 80));
+    expect(fake.calls).toHaveLength(1);
+  });
+
+  it("sends a second request when the first stalls, and takes the fast answer", async () => {
+    let calls = 0;
+    const signals: AbortSignal[] = [];
+    const fetch = (async (_url: unknown, init?: RequestInit) => {
+      calls += 1;
+      const signal = init?.signal as AbortSignal;
+      signals.push(signal);
+      if (calls === 1) {
+        // Stall until aborted, like a real fetch that is cancelled.
+        return new Promise<Response>((_, reject) => {
+          signal.addEventListener("abort", () => reject(new Error("aborted")));
+        });
+      }
+      return ok();
+    }) as unknown as typeof globalThis.fetch;
+
+    const client = new LiveGeminiClient(CONFIG, { fetch, hedgeAfterMs: 5 });
+    const out = await client.chat({ prompt: prompt() });
+    expect(out.text).toBe('{"summary":"second"}');
+    expect(calls).toBe(2);
+    expect(signals[0].aborted).toBe(true);
+  });
+
+  it("still reports a failure when every attempt fails", async () => {
+    let calls = 0;
+    const fetch = (async () => {
+      calls += 1;
+      if (calls === 1) {
+        return new Promise<Response>((_, reject) => {
+          setTimeout(() => reject(new Error("stalled")), 30);
+        });
+      }
+      throw new Error("socket hang up");
+    }) as unknown as typeof globalThis.fetch;
+    const client = new LiveGeminiClient(CONFIG, { fetch, hedgeAfterMs: 5 });
+    await expectAiError(() => client.chat({ prompt: prompt() }), "upstream_error");
+    expect(calls).toBe(2);
+  });
+
+  it("can be disabled", async () => {
+    let calls = 0;
+    const fetch = (async () => {
+      calls += 1;
+      await new Promise((r) => setTimeout(r, 20));
+      return ok();
+    }) as unknown as typeof globalThis.fetch;
+    const client = new LiveGeminiClient(CONFIG, { fetch, hedgeAfterMs: 0 });
+    const out = await client.chat({ prompt: prompt() });
+    expect(out.text).toBe('{"summary":"second"}');
+    expect(calls).toBe(1);
+  });
+
+  it("cancels every attempt when the caller aborts", async () => {
+    const controller = new AbortController();
+    const signals: AbortSignal[] = [];
+    const fetch = (async (_url: unknown, init?: RequestInit) => {
+      const signal = init?.signal as AbortSignal;
+      signals.push(signal);
+      return new Promise<Response>((_, reject) => {
+        signal.addEventListener("abort", () => reject(new Error("aborted")));
+      });
+    }) as unknown as typeof globalThis.fetch;
+    const client = new LiveGeminiClient(CONFIG, { fetch, hedgeAfterMs: 5 });
+    setTimeout(() => controller.abort(), 15);
+    await expectAiError(
+      () => client.chat({ prompt: prompt(), signal: controller.signal }),
+      "timeout",
+    );
+    expect(signals.every((s) => s.aborted)).toBe(true);
+  });
+});
+
 describe("mapGeminiError", () => {
   it("prioritizes an invalid key over the status", () => {
     expect(mapGeminiError(400, true)).toBe("not_configured");

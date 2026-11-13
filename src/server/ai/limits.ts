@@ -10,7 +10,16 @@ export const MAX_JSON_BYTES = 200_000;
 export const MULTIPART_OVERHEAD_BYTES = 64_000;
 export const OCR_TIMEOUT_MS = 60_000;
 /** Lumen answers a chat turn within 25 s or ends it with a 504. */
-export const CHAT_TIMEOUT_MS = 30_000;
+export const CHAT_TIMEOUT_MS = 45_000;
+
+/**
+ * Gemini's flash-lite line answers in ~1-2s most of the time but occasionally
+ * stalls for 15-35s on the same prompt, so a single request has a long tail.
+ * After this delay a second identical request is sent and the first answer
+ * wins; the loser is aborted. Both requests are stateless, so a duplicate is
+ * harmless, and flash-lite is cheap enough to pay for occasionally.
+ */
+export const GEMINI_HEDGE_AFTER_MS = 5_000;
 
 /**
  * Lumen AI Chat accepts 1-4000 characters per message and has no separate
