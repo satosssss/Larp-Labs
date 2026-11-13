@@ -17,7 +17,7 @@ import { AiError } from "./errors";
  * explanations to real users.
  */
 
-export const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
+export const GEMINI_DEFAULT_MODEL = "gemini-3.1-flash-lite";
 export const GEMINI_DEFAULT_ORIGIN =
   "https://generativelanguage.googleapis.com";
 

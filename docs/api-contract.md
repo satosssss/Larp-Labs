@@ -89,7 +89,7 @@ Implemented in `src/server/ai/` and called from the browser by `aiGateway` (`src
 - Live calls to either provider are limited to 20 requests per 10 minutes per client. Mock mode is not limited.
 - Upload rules: content-sniffed JPEG, PNG or PDF, up to 10 MB and 10 pages. Held in memory only. HEIC is not accepted yet.
 - Run with `LUMEN_MODE=mock` and `GEMINI_MODE=mock` for the whole flow with clearly labeled fake clients. Missing live credentials return `not_configured`; they never fall back to mock.
-- Gemini configuration: `GEMINI_API_KEY` (required live), `GEMINI_MODEL` (default `gemini-2.5-flash`), optional `GEMINI_API_ORIGIN`. The key is sent only in the `x-goog-api-key` header.
+- Gemini configuration: `GEMINI_API_KEY` (required live), `GEMINI_MODEL` (default `gemini-3.1-flash-lite`), optional `GEMINI_API_ORIGIN`. The key is sent only in the `x-goog-api-key` header.
 
 ## For Members 1 and 2
 
