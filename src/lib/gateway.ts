@@ -53,16 +53,74 @@ export class ServiceUnavailable extends Error {
 const unavailable = async (): Promise<never> => {
   throw new ServiceUnavailable();
 };
+
+export class ApiRequestError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+    public retryAfterSec?: number,
+  ) {
+    super(message);
+    this.name = "ApiRequestError";
+  }
+}
+
+/** Same-origin call that unwraps the `{ ok, data, error }` envelope. */
+async function call<T>(
+  path: string,
+  init: RequestInit,
+  signal?: AbortSignal,
+): Promise<T> {
+  const res = await fetch(path, {
+    ...init,
+    signal,
+    credentials: "same-origin",
+  });
+  let body: {
+    ok?: boolean;
+    data?: T;
+    error?: { code: string; message: string; retryAfterSec?: number };
+  } | null = null;
+  try {
+    body = await res.json();
+  } catch {
+    /* non-JSON response */
+  }
+  if (res.ok && body?.ok) return body.data as T;
+  if (res.status === 501 || body?.error?.code === "NOT_IMPLEMENTED")
+    throw new ServiceUnavailable();
+  throw new ApiRequestError(
+    body?.error?.code ?? "INTERNAL",
+    body?.error?.message ?? "Request failed",
+    body?.error?.retryAfterSec,
+  );
+}
+
+const json = (value: unknown): RequestInit => ({
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(value),
+});
+
 export const gateway: NoticeGateway = {
-  extract: unavailable,
-  analyze: unavailable,
-  chat: unavailable,
-  prepare: unavailable,
-  providers: unavailable,
-  report: unavailable,
-  share: unavailable,
-  revoke: unavailable,
-  deleteSession: unavailable,
+  extract: (file, signal) => {
+    const form = new FormData();
+    form.append("file", file);
+    return call("/api/extract", { method: "POST", body: form }, signal);
+  },
+  analyze: (text, language, signal) =>
+    call("/api/analyze", json({ text, language }), signal),
+  chat: (input, signal) => call("/api/chat", json(input), signal),
+  prepare: (input, signal) => call("/api/prepare", json(input), signal),
+  providers: unavailable, // pending Supabase directory
+  report: unavailable, // pending PDF export
+  share: (input) => call("/api/share", json(input)),
+  revoke: async (id) => {
+    await call(`/api/share/${encodeURIComponent(id)}`, { method: "DELETE" });
+  },
+  deleteSession: async () => {
+    await call("/api/session", { method: "DELETE" });
+  },
 };
 export function safeExternalUrl(value: string): string | null {
   try {
