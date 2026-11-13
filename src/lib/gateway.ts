@@ -1,3 +1,4 @@
+import { aiGateway } from "./gateway-http";
 import type { Analysis, Language } from "./sample";
 export type ChatResult = { text: string; quote?: string };
 export type Provider = {
@@ -54,9 +55,9 @@ const unavailable = async (): Promise<never> => {
   throw new ServiceUnavailable();
 };
 export const gateway: NoticeGateway = {
-  extract: unavailable,
-  analyze: unavailable,
-  chat: unavailable,
+  extract: aiGateway.extract,
+  analyze: aiGateway.analyze,
+  chat: aiGateway.chat,
   prepare: unavailable,
   providers: unavailable,
   report: unavailable,
