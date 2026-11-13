@@ -7,8 +7,8 @@ const buckets: Map<string, Bucket> = (g.__ll_rl ??= new Map());
 
 /**
  * Fixed-window limiter. In-memory, so it is per serverless instance (best
- * effort only). For production on Vercel, replace this function with an
- * Upstash/Redis-backed one that keeps the same signature.
+ * effort only). For production on Vercel, replace this function with a
+ * shared-store implementation (e.g. Supabase) that keeps the same signature.
  */
 export async function rateLimit(
   key: string,

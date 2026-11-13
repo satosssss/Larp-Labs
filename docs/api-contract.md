@@ -90,5 +90,5 @@ In memory only, never written to disk. The type is detected from magic bytes. Pl
 
 ## Deployment notes
 
-- The share store and rate limiter are in-memory today. On Vercel each serverless instance has its own memory, so **links will not persist reliably and limits are best-effort until the Supabase and Redis adapters replace them**. The interfaces (`ShareStore`, `rateLimit`) are the swap points.
+- The share store and rate limiter are in-memory today. On Vercel each serverless instance has its own memory, so **links will not persist reliably and limits are best-effort until the Supabase adapters replace them**. The interfaces (`ShareStore`, `rateLimit`) are the swap points.
 - `SESSION_SECRET` (32+ chars) is required in production.
