@@ -1,3 +1,4 @@
+import { aiGateway } from "./gateway-http";
 import type { Analysis, Language } from "./sample";
 export type ChatResult = { text: string; quote?: string };
 export type Provider = {
@@ -65,7 +66,9 @@ export class ApiRequestError extends Error {
   }
 }
 
-/** Same-origin call that unwraps the `{ ok, data, error }` envelope. */
+/** Same-origin call that unwraps the `{ ok, data, error }` envelope used by the
+ * backend routes (share, session, prepare). The AI routes (ocr, analyze, chat)
+ * keep their own response shape and are handled by `aiGateway`. */
 async function call<T>(
   path: string,
   init: RequestInit,
@@ -103,14 +106,9 @@ const json = (value: unknown): RequestInit => ({
 });
 
 export const gateway: NoticeGateway = {
-  extract: (file, signal) => {
-    const form = new FormData();
-    form.append("file", file);
-    return call("/api/extract", { method: "POST", body: form }, signal);
-  },
-  analyze: (text, language, signal) =>
-    call("/api/analyze", json({ text, language }), signal),
-  chat: (input, signal) => call("/api/chat", json(input), signal),
+  extract: aiGateway.extract,
+  analyze: aiGateway.analyze,
+  chat: aiGateway.chat,
   prepare: (input, signal) => call("/api/prepare", json(input), signal),
   providers: unavailable, // pending Supabase directory
   report: unavailable, // pending PDF export

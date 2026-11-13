@@ -5,9 +5,10 @@ Status column: **live** = implemented and tested, **stub** = validates input the
 
 ## Envelope
 
-Every JSON response, success or failure, has this shape:
+Backend routes (`share`, `session`, `deadline`, `prepare`) return this shape for success and failure. The **AI routes (`/api/ocr`, `/api/analyze`, `/api/chat`) keep their own shape**, documented under "AI routes" below, and are called through `aiGateway` in `src/lib/gateway-http.ts`.
 
 ```ts
+
 type ApiResponse<T> =
   | { ok: true;  data: T;    error: null }
   | { ok: false; data: null; error: { code: ErrorCode; message: string; retryAfterSec?: number; details?: unknown } };
@@ -40,9 +41,9 @@ No login. The first write that needs ownership (`POST /api/share`) sets an httpO
 
 | Method & path | Status | Request | `data` on success | Owner |
 |---|---|---|---|---|
-| `POST /api/extract` | stub | `multipart/form-data` with field `file` | `{ text: string }` | M2 (OCR), M3 (validation, quality) |
-| `POST /api/analyze` | stub | `{ text, language }` | `Analysis` (`src/lib/sample.ts`) | M2 |
-| `POST /api/chat` | stub | `{ text, question, language }` | `{ text: string; quote?: string }` | M2 |
+| `POST /api/ocr` | live (AI shape) | `multipart/form-data`: `file`, optional `language` | `{ text, pages?, incomplete?, failedPages?, mode }` | M2 |
+| `POST /api/analyze` | live (AI shape) | `{ text, language, noticeType? }` | `{ analysis: Analysis, detail, mode }` | M2 |
+| `POST /api/chat` | live (AI shape) | `{ text, question, language }` | `{ reply: { text, quote? }, detail, mode }` | M2 |
 | `POST /api/prepare` | stub | `{ text, language, answers: (string\|null)[] }` | `{ questions: string[]; checklist: {id,label,group}[] }` | M2 |
 | `POST /api/deadline` | live | see below | see below | M3 |
 | `GET /api/providers?city=` | planned | query `city` (+ optional `region`) | `Provider[]` plus map link | M3 |
@@ -77,16 +78,22 @@ The server keeps only `type`, `date`, `time` (as `dates[]`) and up to 10 consult
 
 Links expire after `SHARE_TTL_HOURS` (default 72). Only the creating session can revoke.
 
-### `POST /api/extract` upload rules
+## AI routes (`/api/ocr`, `/api/analyze`, `/api/chat`)
 
-In memory only, never written to disk. The type is detected from magic bytes. Planned additional checks: image blur, darkness and minimum size before OCR, returning `LOW_QUALITY` with `details: { reasons: ("blurry"|"dark"|"too_small")[] }`.
+Implemented in `src/server/ai/` and called from the browser by `aiGateway` (`src/lib/gateway-http.ts`). They do not use the `{ ok, data, error }` envelope.
+
+- Success bodies are listed in the Routes table. Every success includes `mode: "lumen" | "mock"`, and the `X-LegaLinaw-AI-Mode` header carries the same value.
+- Errors: `{ error: { code, message } }` where `message` is already localized (`fil` or `en`) and never contains document text. Codes include `invalid_request`, `unsupported_file`, `file_too_large`, `too_many_pages`, `unreadable_file`, `no_text`, `text_too_long` (limit 20,000 chars), `not_configured` (503), `timeout`, `rate_limited` (429, `Retry-After` set), `upstream_error`, `invalid_model_output`, `guardrail_blocked`, `unsupported`.
+- Live Lumen calls are limited to 20 requests per 10 minutes per client. Mock mode is not limited.
+- Upload rules: content-sniffed JPEG, PNG or PDF, up to 10 MB and 10 pages. Held in memory only. HEIC is not accepted yet.
+- Run with `LUMEN_MODE=mock` for the whole flow with a clearly labeled fake client. Missing live credentials return `not_configured`; they never fall back to mock.
 
 ## For Members 1 and 2
 
-- Replace a stub by editing only the `throw new ApiFailure("NOT_IMPLEMENTED", ...)` line in that route. Validation, rate limiting and the envelope are already there.
-- Throw `ApiFailure(code, message)` for expected errors. Return `ok(data)` for success. Do not return raw `Response.json`.
+- Backend routes: throw `ApiFailure(code, message)` for expected errors and return `ok(data)` for success (`src/lib/server/api.ts`).
 - Keep secrets (Lumen keys, Supabase service role) server-side only. Never prefix them `NEXT_PUBLIC_`.
 - The server never receives unredacted text for Lumen Chat: redact first, then call the model.
+- Image blur/darkness checks are planned for `/api/ocr` and are not built yet.
 
 ## Deployment notes
 
