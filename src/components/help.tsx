@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { usePreferences } from "@/lib/preferences";
-import { DirectoryFinder } from "./directory-finder";
 import { Icon } from "./ui";
 export function HelpPage() {
   const en = usePreferences((s) => s.language) === "en";
@@ -26,12 +25,6 @@ export function HelpPage() {
             : "Gamitin ang opisyal na sources para humanap ng legal na tulong. Itanong muna ang kwalipikasyon, iskedyul, at anumang bayad bago bumisita."}
         </p>
       </div>
-      <div className="notice-alert">
-        {en
-          ? "The local directory is still being prepared. These official national resources remain available; no location data is collected."
-          : "Inihahanda pa ang lokal na directory. Maaari mong gamitin ang mga opisyal na pambansang source na ito; walang kinokolektang lokasyon."}
-      </div>
-      <DirectoryFinder en={en} />
       <div className="help-grid">
         <article className="resource-card">
           <span className="icon-tile">
