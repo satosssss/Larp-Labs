@@ -23,7 +23,8 @@ export type ReportInput = {
 export type ShareLink = { id: string; url: string; expiresAt: string };
 /** Frontend integration seam only. Backend owners implement same-origin adapters.
  * Adapters must redact reviewed text, validate responses and enforce guardrails.
- * Never put Lumen credentials or Supabase service-role keys in this module. */
+ * Never put Lumen or Gemini credentials, or Supabase service-role keys, in
+ * this module. */
 export interface NoticeGateway {
   extract(file: File, signal?: AbortSignal): Promise<{ text: string }>;
   analyze(

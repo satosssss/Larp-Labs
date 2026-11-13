@@ -82,11 +82,14 @@ Links expire after `SHARE_TTL_HOURS` (default 72). Only the creating session can
 
 Implemented in `src/server/ai/` and called from the browser by `aiGateway` (`src/lib/gateway-http.ts`). They do not use the `{ ok, data, error }` envelope.
 
-- Success bodies are listed in the Routes table. Every success includes `mode: "lumen" | "mock"`, and the `X-LegaLinaw-AI-Mode` header carries the same value.
+**Provider split.** Lumen is the document reader only (`/api/ocr`): the prototype Lumen chat instance refuses general questions, so it is not used for reasoning. Review, explanation and follow-up chat (`/api/analyze`, `/api/chat`) are served by Gemini through `src/server/ai/gemini-live.ts`, which calls `generateContent` with `responseMimeType: "application/json"`. Both providers are bound behind narrow interfaces (`OcrClient`, `ChatModel`) in `src/server/ai/lumen-client.ts`.
+
+- Success bodies are listed in the Routes table. Every success includes `mode: "lumen" | "gemini" | "mock"`, and the `X-LegaLinaw-AI-Mode` header carries the same value. `/api/ocr` reports `lumen`; `/api/analyze` and `/api/chat` report `gemini`.
 - Errors: `{ error: { code, message } }` where `message` is already localized (`fil` or `en`) and never contains document text. Codes include `invalid_request`, `unsupported_file`, `file_too_large`, `too_many_pages`, `unreadable_file`, `no_text`, `text_too_long` (limit 20,000 chars), `not_configured` (503), `timeout`, `rate_limited` (429, `Retry-After` set), `upstream_error`, `invalid_model_output`, `guardrail_blocked`, `unsupported`.
-- Live Lumen calls are limited to 20 requests per 10 minutes per client. Mock mode is not limited.
+- Live calls to either provider are limited to 20 requests per 10 minutes per client. Mock mode is not limited.
 - Upload rules: content-sniffed JPEG, PNG or PDF, up to 10 MB and 10 pages. Held in memory only. HEIC is not accepted yet.
-- Run with `LUMEN_MODE=mock` for the whole flow with a clearly labeled fake client. Missing live credentials return `not_configured`; they never fall back to mock.
+- Run with `LUMEN_MODE=mock` and `GEMINI_MODE=mock` for the whole flow with clearly labeled fake clients. Missing live credentials return `not_configured`; they never fall back to mock.
+- Gemini configuration: `GEMINI_API_KEY` (required live), `GEMINI_MODEL` (default `gemini-2.5-flash`), optional `GEMINI_API_ORIGIN`. The key is sent only in the `x-goog-api-key` header.
 
 ## For Members 1 and 2
 

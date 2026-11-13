@@ -21,6 +21,15 @@ export const CHAT_TIMEOUT_MS = 30_000;
 export const LUMEN_MESSAGE_MAX_CHARS = 4000;
 export const MESSAGE_BUDGET_CHARS = 3900;
 
+/**
+ * Gemini takes a much larger prompt than Lumen. The reviewed text is already
+ * capped at MAX_TEXT_CHARS (20,000), so this budget is a safety net rather
+ * than a real constraint.
+ */
+export const GEMINI_MAX_PROMPT_CHARS = 100_000;
+/** Enough for the analyze JSON (summary, claims, dates, next steps). */
+export const GEMINI_MAX_OUTPUT_TOKENS = 4_096;
+
 /** OCR polling: start quick, back off, never exceed the OCR timeout. */
 export const OCR_POLL_INITIAL_MS = 1_000;
 export const OCR_POLL_MAX_MS = 3_000;

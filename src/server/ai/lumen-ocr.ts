@@ -2,14 +2,14 @@ import { AiError } from "./errors";
 import { validateUpload, type ValidatedFile } from "./file-validation";
 import { OCR_TIMEOUT_MS } from "./limits";
 import { withTimeout } from "./call";
-import type { LumenClient, OcrPage } from "./lumen-client";
+import type { OcrClient, OcrPage } from "./lumen-client";
 
 export type OcrResult = {
   text: string;
   pages?: OcrPage[];
   /** Pages the engine could not read. The text is then incomplete. */
   failedPages?: number[];
-  provenance: LumenClient["provenance"];
+  provenance: OcrClient["provenance"];
 };
 
 /**
@@ -18,7 +18,7 @@ export type OcrResult = {
  * stored or logged here.
  */
 export async function extractText(
-  client: LumenClient,
+  client: OcrClient,
   bytes: Uint8Array,
   signal?: AbortSignal,
   /** Pass the result of an earlier validateUpload to avoid validating twice. */

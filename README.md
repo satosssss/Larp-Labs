@@ -6,7 +6,11 @@ A Filipino/English web interface for reviewing legal notices, understanding thei
 
 ## Current status
 
-This branch implements Jay's frontend: the landing page, five-step guided flow, source highlighting, document chat presentation, consultation checklist/questions, official help links, and sender-checking guide. The sample journey uses explicitly fictional, prewritten data. **It does not call Lumen or analyze real documents yet.** Real files stay local and produce a clear unavailable message until the team's backend adapter is connected.
+This branch wires real AI into the guided flow. **Lumen reads the document** (`POST /api/ocr`) and **Gemini does the reasoning** — review, explanation and follow-up chat (`POST /api/analyze`, `POST /api/chat`). The prototype Lumen chat instance refuses general questions, so it is not used for reasoning.
+
+Both providers sit behind narrow server-only interfaces (`OcrClient`, `ChatModel`). Run with `LUMEN_MODE=mock` and `GEMINI_MODE=mock` to exercise the whole flow with clearly labeled fake output and no credentials. Missing credentials never fall back to mock.
+
+The sample journey (`/notice?sample=1`) still uses explicitly fictional, prewritten data and never calls a provider. Report generation, the provider directory, and share persistence remain teammate-owned work.
 
 ## Run locally
 

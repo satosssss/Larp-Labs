@@ -5,7 +5,7 @@ import { buildGroundedQaPrompt } from "../prompts";
 import { chatJson } from "./call";
 import { AiError } from "./errors";
 import { evaluateAll, isAdviceRequest } from "./guardrail";
-import type { LumenClient } from "./lumen-client";
+import type { ChatModel } from "./lumen-client";
 import { parseRawClaims } from "./model-output";
 import { groundClaims } from "./source-checker";
 
@@ -18,7 +18,7 @@ import { groundClaims } from "./source-checker";
  * - Model-authored text goes through the guardrail before it is returned.
  */
 export async function answerQuestion(
-  client: LumenClient,
+  client: ChatModel,
   input: { text: string; question: string; language: Language },
   signal?: AbortSignal,
 ): Promise<AiChatResult> {

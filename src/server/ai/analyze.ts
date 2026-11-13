@@ -11,7 +11,7 @@ import { chatJson } from "./call";
 import { resolveClassification } from "./document-classifier";
 import { AiError } from "./errors";
 import { evaluateAll } from "./guardrail";
-import type { LumenClient } from "./lumen-client";
+import type { ChatModel } from "./lumen-client";
 import {
   parseRawClaims,
   parseRawClassification,
@@ -33,7 +33,7 @@ import {
  * the Source Checker, classifier rules and guardrail decide what is shown.
  */
 export async function analyzeDocument(
-  client: LumenClient,
+  client: ChatModel,
   input: { text: string; language: Language; noticeType?: NoticeType },
   signal?: AbortSignal,
 ): Promise<AiAnalysisResult> {

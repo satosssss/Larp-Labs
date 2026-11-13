@@ -22,8 +22,11 @@ export type NoticeType = (typeof NOTICE_TYPES)[number];
 /** Minimum confidence (0-100) for a model-assigned type to be kept. Req 6.4. */
 export const MIN_CLASSIFICATION_CONFIDENCE = 60;
 
-/** Where an AI result came from. Mock output must never look like Lumen output. */
-export type Provenance = "mock" | "lumen";
+/**
+ * Where an AI result came from. Mock output must never look like real output.
+ * OCR text comes from Lumen; analysis and chat answers come from Gemini.
+ */
+export type Provenance = "mock" | "lumen" | "gemini";
 
 /** A passage that is an exact, character-for-character slice of the reviewed text. */
 export type Evidence = { quote: string; start: number; end: number };

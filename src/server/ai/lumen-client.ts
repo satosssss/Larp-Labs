@@ -34,13 +34,30 @@ export type OcrOutput = {
 export type ChatInput = { prompt: Prompt; signal?: AbortSignal };
 export type ChatOutput = { text: string };
 
-export interface LumenClient {
+/**
+ * Narrow capabilities, so each provider is bound to one job:
+ *  - `OcrClient`  reads a document. Lumen owns this.
+ *  - `ChatModel`  answers a prompt with text. Gemini owns this.
+ * `LumenClient` still satisfies both, which keeps the mock in one class.
+ */
+
+export interface OcrClient {
   readonly provenance: Provenance;
-  /** Largest chat message the backend accepts, in characters. */
-  readonly maxMessageChars: number;
   ocr(input: OcrInput): Promise<OcrOutput>;
+}
+
+export interface ChatModel {
+  readonly provenance: Provenance;
+  /**
+   * Largest prompt this backend accepts, in characters. The prompt is never
+   * silently truncated: an over-limit document fails with `document_too_long`
+   * and the user shortens it in the review step.
+   */
+  readonly maxMessageChars: number;
   chat(input: ChatInput): Promise<ChatOutput>;
 }
+
+export interface LumenClient extends OcrClient, ChatModel {}
 
 export function createLumenClient(config: LumenConfig): LumenClient {
   return config.mode === "mock"
@@ -51,3 +68,9 @@ export function createLumenClient(config: LumenConfig): LumenClient {
 /** Default client for routes: reads backend env vars, throws a safe AiError if unset. */
 export const clientFromEnv = (): LumenClient =>
   createLumenClient(readLumenConfig());
+
+/**
+ * OCR-only client for the routes. Lumen is bound here and nowhere else:
+ * analysis and chat answers come from the Gemini client (see gemini-client.ts).
+ */
+export const ocrClientFromEnv = (): OcrClient => clientFromEnv();

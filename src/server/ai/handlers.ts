@@ -9,7 +9,12 @@ import {
   MAX_JSON_BYTES,
   MULTIPART_OVERHEAD_BYTES,
 } from "./limits";
-import { clientFromEnv, type LumenClient } from "./lumen-client";
+import { chatModelFromEnv } from "./gemini-client";
+import {
+  ocrClientFromEnv,
+  type ChatModel,
+  type OcrClient,
+} from "./lumen-client";
 import { validateUpload } from "./file-validation";
 import { extractText } from "./lumen-ocr";
 import { RateLimitError, RateLimiter, clientKey } from "./rate-limit";
@@ -30,24 +35,34 @@ import {
  */
 
 export type Deps = {
-  getClient: () => LumenClient;
+  /** OCR only. Lumen is the document reader. */
+  getOcrClient: () => OcrClient;
+  /** Review, explanation and follow-up chat. Gemini is the reasoner. */
+  getChatModel: () => ChatModel;
   /** Applied to live (credit-costing) calls only. Mock mode is never throttled. */
   limiter?: RateLimiter;
 };
 const defaultDeps: Deps = {
-  getClient: clientFromEnv,
+  getOcrClient: ocrClientFromEnv,
+  getChatModel: chatModelFromEnv,
   limiter: new RateLimiter(),
 };
 
-/** Gets the client and, for live calls, charges the caller's rate-limit budget. */
-function clientFor(request: Request, deps: Deps): LumenClient {
-  const client = deps.getClient();
-  if (client.provenance === "lumen") deps.limiter?.check(clientKey(request));
+/**
+ * Charges the caller's rate-limit budget for any live provider. Both providers
+ * are metered, so the limit is per visitor rather than per upstream service.
+ */
+function limited<T extends { provenance: Provenance }>(
+  request: Request,
+  client: T,
+  deps: Deps,
+): T {
+  if (client.provenance !== "mock") deps.limiter?.check(clientKey(request));
   return client;
 }
 
-const mode = (provenance: Provenance) =>
-  provenance === "mock" ? "mock" : "lumen";
+/** Reported to the browser as `mode`: mock | lumen | gemini. */
+const mode = (provenance: Provenance) => provenance;
 
 function respond(body: unknown, status = 200, provenance?: Provenance) {
   const headers: Record<string, string> = {
@@ -120,7 +135,7 @@ export async function handleOcr(
     // contacting Lumen, so bad uploads cost nothing.
     const validated = validateUpload(bytes);
     const result = await extractText(
-      clientFor(request, deps),
+      limited(request, deps.getOcrClient(), deps),
       bytes,
       request.signal,
       validated,
@@ -152,8 +167,8 @@ export async function handleAnalyze(
     const json = await readJson(request);
     language = json.language;
     const input = parseAnalyzeRequest(json.body);
-    const client = clientFor(request, deps);
-    const detail = await analyzeDocument(client, input, request.signal);
+    const model = limited(request, deps.getChatModel(), deps);
+    const detail = await analyzeDocument(model, input, request.signal);
     const analysis = toFrontendAnalysis(detail);
     // Nothing in the result is backed by the document: do not present it.
     if (!analysis) throw new AiError("unsupported");
@@ -176,8 +191,8 @@ export async function handleChat(
     const json = await readJson(request);
     language = json.language;
     const input = parseChatRequest(json.body);
-    const client = clientFor(request, deps);
-    const detail = await answerQuestion(client, input, request.signal);
+    const model = limited(request, deps.getChatModel(), deps);
+    const detail = await answerQuestion(model, input, request.signal);
     return respond(
       { reply: toFrontendChat(detail), detail, mode: mode(detail.provenance) },
       200,

@@ -4,6 +4,7 @@ import type { LiveLumenConfig } from "./config";
 import { AiError, type AiErrorCode } from "./errors";
 import {
   LUMEN_MESSAGE_MAX_CHARS,
+  MESSAGE_BUDGET_CHARS,
   OCR_POLL_INITIAL_MS,
   OCR_POLL_MAX_MS,
 } from "./limits";
@@ -77,7 +78,8 @@ const instanceCache = new Map<string, string>();
 
 export class LiveLumenClient implements LumenClient {
   readonly provenance: Provenance = "lumen";
-  readonly maxMessageChars = LUMEN_MESSAGE_MAX_CHARS;
+  /** Prompt budget, kept under the service's 4,000-character message limit. */
+  readonly maxMessageChars = MESSAGE_BUDGET_CHARS;
   // Held privately and never serialized.
   readonly #config: LiveLumenConfig;
   readonly #fetch: FetchLike;

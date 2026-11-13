@@ -9,6 +9,7 @@ import {
   type Deps,
 } from "../../src/server/ai/handlers";
 import { createLumenClient } from "../../src/server/ai/lumen-client";
+import { createGeminiModel } from "../../src/server/ai/gemini-client";
 import { RateLimiter } from "../../src/server/ai/rate-limit";
 import { FAKE_CONFIG, fakeLumen } from "./fake-lumen";
 import {
@@ -21,9 +22,13 @@ import { MOCK_OCR_MARK, MockLumenClient } from "../../src/server/ai/lumen-mock";
 import { MAX_FILE_BYTES, MAX_TEXT_CHARS } from "../../src/server/ai/limits";
 import { exactSource } from "../../src/lib/flow";
 import { BARANGAY_FIL, UNCLEAR } from "../fixtures/notices";
+import { geminiStub } from "./gemini-stub";
 import { JPEG, PNG, pdf, textFile } from "./helpers";
 
-const mockDeps: Deps = { getClient: () => new MockLumenClient() };
+const mockDeps: Deps = {
+  getOcrClient: () => new MockLumenClient(),
+  getChatModel: () => new MockLumenClient(),
+};
 
 const upload = (bytes: Uint8Array, name = "notice.png", type = "image/png") => {
   const form = new FormData();
@@ -92,13 +97,15 @@ describe("POST /api/ocr", () => {
   });
   it("reports unreadable OCR as no_text and upstream failures safely", async () => {
     const none: Deps = {
-      getClient: () => new MockLumenClient({ ocrText: "  " }),
+      getOcrClient: () => new MockLumenClient({ ocrText: "  " }),
+      getChatModel: () => new MockLumenClient(),
     };
     const res = await handleOcr(upload(PNG), none);
     expect(res.status).toBe(422);
     expect((await res.json()).error.code).toBe("no_text");
     const down: Deps = {
-      getClient: () => new MockLumenClient({ ocrFailure: "error" }),
+      getOcrClient: () => new MockLumenClient({ ocrFailure: "error" }),
+      getChatModel: () => new MockLumenClient(),
     };
     expect((await handleOcr(upload(PNG), down)).status).toBe(502);
   });
@@ -204,7 +211,9 @@ describe("POST /api/chat", () => {
 
 describe("missing or unfinished credentials fail safely", () => {
   const configured = (env: Record<string, string | undefined>): Deps => ({
-    getClient: () => createLumenClient(readLumenConfig(env)),
+    getOcrClient: () => createLumenClient(readLumenConfig(env)),
+    // Reasoning is configured separately: an empty Gemini env is unconfigured.
+    getChatModel: () => createGeminiModel(env),
   });
   const SECRET_KEY = "key-SECRETVALUE-111";
   const SECRET_SECRET = "sec-SECRETVALUE-222";
@@ -248,11 +257,12 @@ describe("missing or unfinished credentials fail safely", () => {
       }),
     });
     const deps: Deps = {
-      getClient: () =>
+      getOcrClient: () =>
         new LiveLumenClient(
           { ...FAKE_CONFIG, apiKey: SECRET_KEY, apiSecret: SECRET_SECRET },
           { fetch: fake.fetch, sleep: async () => undefined },
         ),
+      getChatModel: () => createGeminiModel({}),
     };
     const responses = [
       await handleOcr(upload(PNG), deps),
@@ -288,7 +298,10 @@ describe("missing or unfinished credentials fail safely", () => {
   it("unexpected internal errors return a generic 500 with no details", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     const boom: Deps = {
-      getClient: () => {
+      getOcrClient: () => {
+        throw new Error("db password is hunter2");
+      },
+      getChatModel: () => {
         throw new Error("db password is hunter2");
       },
     };
@@ -418,11 +431,12 @@ describe("live client through the HTTP handlers (simulated Lumen, not the real A
       answer,
     });
     return {
-      getClient: () =>
+      getOcrClient: () =>
         new LiveLumenClient(FAKE_CONFIG, {
           fetch: fake.fetch,
           sleep: async () => undefined,
         }),
+      getChatModel: () => geminiStub(),
       limiter,
     };
   };
@@ -442,7 +456,7 @@ describe("live client through the HTTP handlers (simulated Lumen, not the real A
     );
     expect(analyze.status).toBe(200);
     const { analysis, detail } = await analyze.json();
-    expect(detail.provenance).toBe("lumen");
+    expect(detail.provenance).toBe("gemini");
     expect(analysis.summary).not.toContain("MOCK");
     expect(analysis.type).toBe("Paunawa mula sa barangay");
     expect(analysis.date).toBe("ika-20 ng Nobyembre 2026");
@@ -470,11 +484,12 @@ describe("live client through the HTTP handlers (simulated Lumen, not the real A
       pages: { 1: { lines: ["Una lang ang nabasa"] } },
     });
     const deps: Deps = {
-      getClient: () =>
+      getOcrClient: () =>
         new LiveLumenClient(FAKE_CONFIG, {
           fetch: fake.fetch,
           sleep: async () => undefined,
         }),
+      getChatModel: () => geminiStub(),
     };
     const body = await (await handleOcr(upload(PNG), deps)).json();
     expect(body).toMatchObject({ incomplete: true, failedPages: [2] });
@@ -483,11 +498,12 @@ describe("live client through the HTTP handlers (simulated Lumen, not the real A
 
 describe("rate limiting protects credits (live calls only)", () => {
   const live = (limiter: RateLimiter): Deps => ({
-    getClient: () =>
+    getOcrClient: () =>
       new LiveLumenClient(FAKE_CONFIG, {
         fetch: fakeLumen({ answer: "{}" }).fetch,
         sleep: async () => undefined,
       }),
+    getChatModel: () => geminiStub(),
     limiter,
   });
   const ask = (deps: Deps, ip = "1.1.1.1") =>
@@ -542,11 +558,12 @@ describe("rate limiting protects credits (live calls only)", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     const fake = fakeLumen({ pages: { 1: { lines: ["Hello world"] } } });
     const deps: Deps = {
-      getClient: () =>
+      getOcrClient: () =>
         new LiveLumenClient(FAKE_CONFIG, {
           fetch: fake.fetch,
           sleep: async () => undefined,
         }),
+      getChatModel: () => geminiStub(),
       limiter: new RateLimiter(1, 60_000),
     };
     for (const bad of [textFile, new Uint8Array(), pdf(1, "", false)])

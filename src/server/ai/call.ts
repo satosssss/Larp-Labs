@@ -1,8 +1,8 @@
 import type { Prompt } from "../../lib/ai-types";
 import { renderMessage } from "../prompts/shared";
 import { AiError } from "./errors";
-import { CHAT_TIMEOUT_MS, MESSAGE_BUDGET_CHARS } from "./limits";
-import type { LumenClient } from "./lumen-client";
+import { CHAT_TIMEOUT_MS } from "./limits";
+import type { ChatModel } from "./lumen-client";
 import { parseJsonObject } from "./model-output";
 
 /**
@@ -43,8 +43,10 @@ export async function withTimeout<T>(
  * sent. The document is never silently truncated: the user is told it is too
  * long and can shorten it in the review step.
  */
-export function assertFitsMessage(client: LumenClient, prompt: Prompt) {
-  const limit = Math.min(MESSAGE_BUDGET_CHARS, client.maxMessageChars);
+export function assertFitsMessage(client: ChatModel, prompt: Prompt) {
+  // Each backend declares its own budget: Lumen caps a chat message near
+  // 4,000 characters, Gemini accepts far more. Neither truncates silently.
+  const limit = client.maxMessageChars;
   if (renderMessage(prompt).length > limit)
     throw new AiError("document_too_long");
 }
@@ -66,7 +68,7 @@ const looksLikeProseRefusal = (text: string) =>
  * reported as out_of_scope instead, because retrying will not change it.
  */
 export async function chatJson(
-  client: LumenClient,
+  client: ChatModel,
   prompt: Prompt,
   outer?: AbortSignal,
   options: { proseIsRefusal?: boolean } = {},

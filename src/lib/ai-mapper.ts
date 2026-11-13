@@ -9,7 +9,7 @@ import type { Analysis } from "./sample";
  * frontend has no provenance field.
  */
 
-export const MOCK_MARK = "[MOCK - not from Lumen]";
+export const MOCK_MARK = "[MOCK - simulated data]";
 
 /** The single passage the frontend highlights. Always a verified exact slice. */
 function primaryEvidence(result: AiAnalysisResult): Evidence | null {

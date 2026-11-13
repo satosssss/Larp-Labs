@@ -3,7 +3,8 @@ import type { Analysis } from "./sample";
 
 /**
  * Same-origin adapter for the AI routes. The browser only ever talks to our
- * own /api/* endpoints; Lumen and its credentials exist on the server only.
+ * own /api/* endpoints; the Lumen and Gemini credentials exist on the
+ * server only.
  * Failures reject with AiRequestError carrying a short code, never a message
  * that could contain document text.
  */
